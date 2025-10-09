@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "ecdconnect.html",
+    "href": "ecdconnect.html",
+    "title": "ECD Connect Data Report",
+    "section": "",
+    "text": "12 500\n\n\nTotal children across all platforms"
+  },
+  {
+    "objectID": "ecdconnect.html#key-metric",
+    "href": "ecdconnect.html#key-metric",
+    "title": "ECD Connect Data Report",
+    "section": "",
+    "text": "12 500\n\n\nTotal children across all platforms"
+  },
+  {
+    "objectID": "ecdconnect.html#quarto",
+    "href": "ecdconnect.html#quarto",
+    "title": "ECD Connect Data Report",
+    "section": "Quarto",
+    "text": "Quarto\nQuarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see https://quarto.org."
+  },
+  {
+    "objectID": "ecdconnect.html#running-code",
+    "href": "ecdconnect.html#running-code",
+    "title": "ECD Connect Data Report",
+    "section": "Running Code",
+    "text": "Running Code\nWhen you click the Render button a document will be generated that includes both content and the output of embedded code. You can embed code like this:\n\n1 + 1\n\n[1] 2\n\n\nYou can add options to executable code like this\n\n\n[1] 4\n\n\nThe echo: false option disables the printing of code (only output is displayed)."
+  }
+]
