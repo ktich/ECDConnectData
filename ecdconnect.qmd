@@ -4,12 +4,18 @@ author: "Kim Tichmann"
 format: html
 ---
 
-## Reach
+## Reach and Scale of ECD Connect
+A summary of ECD Connect's reach. This includes the open-access ECD Connect App, all white-label versions and Grow Great's CHW Connect.
 
 ::: {.stat-block}
 ::: {.stat-card}
+<p class="stat-number">4</p>
+<p class="stat-label">partner organisations</p>
+:::
+
+::: {.stat-card}
 <p class="stat-number">1,912</p>
-<p class="stat-label">total unique user sign-ups across all platforms</p>
+<p class="stat-label">unique user sign-ups</p>
 :::
 ::: {.stat-card}
 <p class="stat-number">###</p>
