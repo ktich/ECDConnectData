@@ -4,35 +4,15 @@ author: "Kim Tichmann"
 format: html
 ---
 
-## Key Metric
+## Reach
 
-::::: stat-block
-::: stat-number
-12 500
+::: {.stat-block}
+::: {.stat-card}
+<p class="stat-number">1,912</p>
+<p class="stat-label">total unique user sign-ups across all platforms</p>
 :::
-
-::: stat-label
-Total children across all platforms
+::: {.stat-card}
+<p class="stat-number">###</p>
+<p class="stat-label">total number of children added across all platforms</p>
 :::
-:::::
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).
+:::
