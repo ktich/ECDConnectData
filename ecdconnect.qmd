@@ -5,9 +5,10 @@ format: html
 ---
 
 ## Reach and Scale of ECD Connect
-A summary of ECD Connect's reach. This includes the open-access ECD Connect App, all white-label versions and Grow Great's CHW Connect.
+A summary of ECD Connect's reach. This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect.
 
 ::: {.stat-block}
+
 ::: {.stat-card}
 <p class="stat-number">4</p>
 <p class="stat-label">partner organisations</p>
@@ -17,8 +18,10 @@ A summary of ECD Connect's reach. This includes the open-access ECD Connect App,
 <p class="stat-number">1,912</p>
 <p class="stat-label">unique user sign-ups</p>
 :::
+
 ::: {.stat-card}
-<p class="stat-number">###</p>
+<p class="stat-number">12,300</p>
 <p class="stat-label">total number of children added across all platforms</p>
 :::
+
 :::
