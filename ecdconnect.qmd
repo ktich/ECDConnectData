@@ -4,8 +4,12 @@ author: "Kim Tichmann"
 format: html
 ---
 
-## Reach and Scale of ECD Connect
-A summary of ECD Connect's reach. This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect.
+# Time period: 
+
+## 1. Reach and Scale of ECD Connect
+A summary of ECD Connect's reach.
+
+This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect.
 
 ::: {.stat-block}
 
@@ -25,3 +29,131 @@ A summary of ECD Connect's reach. This includes the ECD Connect App (open-access
 :::
 
 :::
+
+```{r beneficiaries-map, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(conflicted)
+library(stringr)
+library(patchwork)
+library(scales)
+
+conflict_prefer("filter","dplyr")
+
+load("sub_places.rda")  
+load("postalcodes_geo.rda")
+
+df_children <- read.csv("codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
+df_clients  <- read.csv("GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
+
+districts <- suppressMessages(suppressWarnings(st_read("DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
+
+df_clients2 <- df_clients %>%
+  mutate(
+    District_clean = trimws(toupper(District))
+  )
+
+districts2 <- districts %>%
+  mutate(
+    DISTRICT_NAME_clean = trimws(toupper(DISTRICT_N))
+  )
+
+# Which CSV district names are in the map?
+matched <- df_clients2 %>%
+  filter(District_clean %in% districts2$DISTRICT_NAME_clean)
+invisible(nrow(matched))
+
+# ensure the district polygon column exists
+if (!"DISTRICT_NAME_clean" %in% names(districts2)) {
+  stop("Expected DISTRICT_NAME_clean in 'districts2' but not found.")
+}
+
+# Join the health data to the district polygons
+districts_health <- districts2 %>%
+  left_join(df_clients2, by = c("DISTRICT_NAME_clean" = "District_clean"))
+
+df_children2 <- df_children %>%
+  mutate(PostalCode = as.character(PostalCode),
+         TotalChildren = as.numeric(TotalChildren))
+
+postalcodes_geo2 <- postalcodes_geo %>%
+  mutate(PostalCode = as.character(code))
+
+# join lat/lon + totals
+pcs <- postalcodes_geo2 %>%
+  left_join(df_children2, by = "PostalCode") %>%
+  filter(!is.na(TotalChildren))
+
+# convert to spatial points
+pcs_sf <- st_as_sf(pcs, coords = c("lon", "lat"), crs = 4326, remove = FALSE)
+
+# align CRS + spatial join to districts
+pcs_sf <- st_transform(pcs_sf, st_crs(districts2))
+pcs_with_district <- st_join(pcs_sf, districts2 %>% select(DISTRICT_NAME_clean), join = st_within)
+
+# aggregate postal codes up to district
+districts_ed <- pcs_with_district %>%
+  st_set_geometry(NULL) %>%
+  group_by(DISTRICT_NAME_clean) %>%
+  summarise(TotalChildren = sum(TotalChildren, na.rm = TRUE)) %>%
+  right_join(districts2, by = "DISTRICT_NAME_clean") %>%
+  st_as_sf()
+
+# ---- COMBINE BOTH LAYERS ----
+health_for_map <- districts_health %>%
+  select(DISTRICT_NAME_clean, geometry, Value = TotalClients) %>%
+  mutate(Source = "Health")
+
+ed_for_map <- districts_ed %>%
+  select(DISTRICT_NAME_clean, geometry, Value = TotalChildren) %>%
+  mutate(Source = "Education")
+
+combined_map <- bind_rows(health_for_map, ed_for_map) %>%
+  group_by(DISTRICT_NAME_clean) %>%
+  summarise(
+    TotalBeneficiaries = sum(Value, na.rm = TRUE),
+    geometry = sf::st_union(geometry)
+  ) %>%
+  ungroup()
+
+# --- Merge with district polygons to ensure full geometry coverage ---
+combined_map <- districts2 %>%
+  left_join(
+    st_drop_geometry(combined_map),
+    by = "DISTRICT_NAME_clean"
+  )
+
+# --- Plot ---
+library(ggplot2)
+library(viridis)
+
+ggplot(combined_map) +
+  geom_sf(aes(fill = TotalBeneficiaries), colour = "grey40", size = 0.15) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    trans = "sqrt",
+    na.value = "grey90",
+    name = "Total beneficiaries"
+  ) +
+  labs(
+    title = "Total Beneficiaries by District",
+    subtitle = "Combined Health and Education data",
+    caption = "‘Beneficiaries’ refers to children (education and health) \n and pregnant clients (health) registered in the app."
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+
+```
+
+## 2. Engagement and Activity
+Users are engaging with the ECD Connect tools and submitting data.
+
