@@ -204,6 +204,7 @@ _Since launch on 1 April 2025 to 13 October 2025_
 #| message: false
 #| warning: false
 #| paged-print: true
+#| out.width: 100%
 
 df_appattendance <- read.csv("app-attendance.csv", stringsAsFactors = FALSE)
 
