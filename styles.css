@@ -19,6 +19,10 @@
   flex: 1 1 200px;
 }
 
+.app-background {
+  background-color: #FFD3E6;
+}
+
 .stat-number {
   font-size: 2rem;
   font-weight: bold;

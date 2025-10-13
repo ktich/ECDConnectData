@@ -177,5 +177,49 @@ ggplot(combined_map) +
 ## 2. Engagement and Activity
 Users are engaging with the ECD Connect tools and submitting data.
 
+### Education
+#### ECD Connect App
+_Since launch on 1 April 2025 to 13 October 2025_
+
+::: {.stat-block}
+
+::: {.stat-card .app-background}
+<p class="stat-number">1,377</p>
+<p class="stat-label">unique sign-ups</p>
+:::
+
+::: {.stat-card .app-background}
+<p class="stat-number">464</p>
+<p class="stat-label">preschools added</p>
+:::
+
+::: {.stat-card .app-background}
+<p class="stat-number">1,434</p>
+<p class="stat-label">children registered</p>
+:::
+
+:::
+
+```{r app-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+
+df_appattendance <- read.csv("app-attendance.csv", stringsAsFactors = FALSE)
+
+df_appattendance <- df_appattendance %>%
+    mutate(
+      Month = as.Date(paste0(Month,"-01")),
+      Month = format(Month, "%B %Y")
+    )
+
+ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
+  geom_bar(stat = "identity",  fill = "#FF2180")
+
+```
+
+#### ECD Connect Partner
+
+### Health (CHW Connect)
 
 
