@@ -4,7 +4,7 @@ author: "Kim Tichmann"
 format: html
 ---
 
-# Time period: 
+# October 2025 Report
 
 ## 1. Reach and Scale of ECD Connect
 A summary of ECD Connect's reach.
@@ -132,13 +132,33 @@ combined_map <- districts2 %>%
 library(ggplot2)
 library(viridis)
 
+combined_map <- combined_map %>%
+  mutate(
+    BeneficiaryBand = cut(
+      TotalBeneficiaries,
+      breaks = c(-Inf, 0, 2000, 4000, 6000, Inf),
+      labels = c("0", "1–2000", "2001–4000", "4001–6000", "6000+")
+    )
+  ) %>%
+  mutate(
+    BeneficiaryBand = factor(
+      BeneficiaryBand,
+      levels = c("0", "1–2000", "2001–4000", "4001–6000", "6000+")
+    )
+  )
+
 ggplot(combined_map) +
-  geom_sf(aes(fill = TotalBeneficiaries), colour = "grey40", size = 0.15) +
-  scale_fill_viridis_c(
-    option = "plasma",
-    trans = "sqrt",
-    na.value = "grey90",
-    name = "Total beneficiaries"
+    geom_sf(aes(fill = BeneficiaryBand), colour = "#fff", size = 0.15) +
+  scale_fill_manual(
+    values = c(
+      "0" = "#C9CFD2",
+      "1–2000" = "#8EDCEF",
+      "2001–4000" = "#1DBADF",
+      "4001-6000" = "#52607B",
+      "6000+" = "#27385A"
+    ),
+    name = "Total beneficiaries",
+    drop = FALSE
   ) +
   labs(
     title = "Total Beneficiaries by District",
@@ -156,4 +176,6 @@ ggplot(combined_map) +
 
 ## 2. Engagement and Activity
 Users are engaging with the ECD Connect tools and submitting data.
+
+
 
