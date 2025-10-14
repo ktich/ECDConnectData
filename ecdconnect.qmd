@@ -42,6 +42,8 @@ library(conflicted)
 library(stringr)
 library(patchwork)
 library(scales)
+library(ggplot2)
+library(viridis)
 
 conflict_prefer("filter","dplyr")
 
@@ -128,38 +130,91 @@ combined_map <- districts2 %>%
     by = "DISTRICT_NAME_clean"
   )
 
+
 # --- Plot ---
-library(ggplot2)
-library(viridis)
 
 combined_map <- combined_map %>%
   mutate(
-    BeneficiaryBand = cut(
-      TotalBeneficiaries,
-      breaks = c(-Inf, 0, 2000, 4000, 6000, Inf),
-      labels = c("0", "1–2000", "2001–4000", "4001–6000", "6000+")
-    )
-  ) %>%
-  mutate(
+    BeneficiaryBand = case_when(
+      is.na(TotalBeneficiaries) ~ "0",
+      TotalBeneficiaries == 0 ~ "0",
+      TotalBeneficiaries <= 500 ~ "1–500",
+      TotalBeneficiaries <= 1000 ~ "501–1000",
+      TotalBeneficiaries <= 1500 ~ "1001–1500",
+      TotalBeneficiaries <= 2000 ~ "1501–2000",
+      TotalBeneficiaries <= 2500 ~ "2001–2500",
+      TotalBeneficiaries <= 3000 ~ "2501–3000",
+      TotalBeneficiaries <= 3500 ~ "3001–3500",
+      TotalBeneficiaries <= 4000 ~ "3501–4000",
+      TotalBeneficiaries > 4000 ~ "4000+"
+    ),
     BeneficiaryBand = factor(
       BeneficiaryBand,
-      levels = c("0", "1–2000", "2001–4000", "4001–6000", "6000+")
+      levels = c("0", "1–500", "501–1000", "1001–1500", "1501–2000",
+                 "2001–2500", "2501–3000", "3001–3500", "3501–4000", "4000+")
     )
   )
 
-ggplot(combined_map) +
+
+brand_palette <- c(
+  "0" = "#EFEFEF",        # light grey
+  "1–500" = "#D8EBF6",    # very light blue
+  "501–1000" = "#CBE9F4",
+  "1001–1500" = "#A4DBEF",
+  "1501–2000" = "#8EDCEF",
+  "2001–2500" = "#5CCAE2",
+  "2501–3000" = "#1DBADF",
+  "3001–3500" = "#1497BF",
+  "3501–4000" = "#52607B",
+  "4000+" = "#27385A"     # darkest brand blue
+)
+
+# --- Ensure all legend colours show correctly ---
+library(sf)
+library(dplyr)
+
+# Create dummy rows for each BeneficiaryBand
+dummy_levels <- data.frame(
+  BeneficiaryBand = factor(
+    names(brand_palette),
+    levels = names(brand_palette)
+  )
+)
+
+# Create dummy geometries with the same CRS as your combined_map
+dummy_levels$geometry <- sf::st_sfc(
+  replicate(
+    length(brand_palette),
+    sf::st_point(c(0, 0)),
+    simplify = FALSE
+  ),
+  crs = sf::st_crs(combined_map)   # ensure same CRS
+)
+
+# Convert dummy_levels into an sf object
+dummy_levels <- sf::st_as_sf(dummy_levels)
+
+# Combine with your real map data
+combined_map2 <- dplyr::bind_rows(
+  combined_map %>% select(BeneficiaryBand, geometry),
+  dummy_levels
+)
+
+
+ggplot(combined_map2) +
     geom_sf(aes(fill = BeneficiaryBand), colour = "#fff", size = 0.15) +
   scale_fill_manual(
-    values = c(
-      "0" = "#C9CFD2",
-      "1–2000" = "#8EDCEF",
-      "2001–4000" = "#1DBADF",
-      "4001-6000" = "#52607B",
-      "6000+" = "#27385A"
-    ),
+    values = brand_palette,
     name = "Total beneficiaries",
-    drop = FALSE
+    drop = FALSE,
+    na.value = brand_palette["0"],
+    guide=guide_legend(
+      override.aes = list(fill = unname(brand_palette))
+    )
   ) +
+  coord_sf(xlim = st_bbox(combined_map)[c("xmin", "xmax")],
+         ylim = st_bbox(combined_map)[c("ymin", "ymax")],
+         expand = FALSE) +
   labs(
     title = "Total Beneficiaries by District",
     subtitle = "Combined Health and Education data",
