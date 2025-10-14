@@ -30,6 +30,7 @@ This includes the ECD Connect App (open-access), all ECD Connect Partner version
 
 :::
 
+
 ```{r beneficiaries-map, echo=FALSE}
 #| message: false
 #| warning: false
@@ -47,13 +48,13 @@ library(viridis)
 
 conflict_prefer("filter","dplyr")
 
-load("sub_places.rda")  
-load("postalcodes_geo.rda")
+load("data/sub_places.rda")  
+load("data/postalcodes_geo.rda")
 
-df_children <- read.csv("codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
-df_clients  <- read.csv("GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
+df_children <- read.csv("data/codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
+df_clients  <- read.csv("data/GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
 
-districts <- suppressMessages(suppressWarnings(st_read("DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
+districts <- suppressMessages(suppressWarnings(st_read("data/DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
 
 df_clients2 <- df_clients %>%
   mutate(
@@ -229,8 +230,13 @@ ggplot(combined_map2) +
 
 ```
 
+---
+
+
+
+
 ## 2. Engagement and Activity
-Users are engaging with the ECD Connect tools and submitting data.
+Users are engaging with the ECD Connect tools and submitting data. [to be updated]
 
 ### Education
 #### ECD Connect App
@@ -255,27 +261,89 @@ _Since launch on 1 April 2025 to 13 October 2025_
 
 :::
 
+### User retention
+
+**18%** of users who signed up 30+ days ago returned to the app within the past 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
+
+### Attendance registers saved
+_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
+
 ```{r app-attendance-bar, echo=FALSE}
 #| message: false
 #| warning: false
 #| paged-print: true
 #| out.width: 100%
 
-df_appattendance <- read.csv("app-attendance.csv", stringsAsFactors = FALSE)
+df_appattendance <- read.csv("data/app-attendance.csv", stringsAsFactors = FALSE)
 
 df_appattendance <- df_appattendance %>%
     mutate(
-      Month = as.Date(paste0(Month,"-01")),
-      Month = format(Month, "%B %Y")
+      Month = as.Date(paste0(Month, "-01")),
+      Month = format(Month, "%b %Y")
     )
 
+
 ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
-  geom_bar(stat = "identity",  fill = "#FF2180")
+  geom_bar(stat = "identity",  fill = "#FF2180") +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  )
 
 ```
 
 #### ECD Connect Partner
+To be added
 
 ### Health (CHW Connect)
 
+```{r gg-visits-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
 
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+visits <- read_csv("data/visits.csv")
+
+# Order months chronologically
+visits$Month <- factor(visits$Month, levels = unique(visits$Month))
+
+# Ensure Visit Type order (bottom first)
+visits$`Visit Type` <- factor(
+  visits$`Visit Type`,
+  levels = c("Number of pregnant client visits", "Number of child visits")
+)
+
+# Stacked bar chart with reversed legend order
+ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
+  geom_bar(stat = "identity", colour = "white", width = 0.8) +
+  scale_fill_manual(
+    values = c(
+      "Number of pregnant client visits" = "#FF80AA",  # pink (top)
+      "Number of child visits" = "#5CBFD8"             # teal (bottom)
+    ),
+    breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
+  ) +
+  labs(
+    title = "Visits Completed per Month (Jan 2024 – Sep 2025)",
+    x = NULL,
+    y = "Visits Completed",
+    fill = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.text = element_text(size = 10)
+  )
+
+
+
+```
