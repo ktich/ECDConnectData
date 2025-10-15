@@ -5,11 +5,12 @@ format: html
 ---
 
 # October 2025 Report
+Data report as of 15 October 2025
 
 ## 1. Reach and Scale of ECD Connect
 A summary of ECD Connect's reach.
 
-This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect.
+This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect. The numbers below represent all numbers since launch.
 
 ::: {.stat-block}
 
@@ -232,8 +233,7 @@ ggplot(combined_map2) +
 
 ---
 
-
-
+<br>
 
 ## 2. Engagement and Activity
 Users are engaging with the ECD Connect tools and submitting data. [to be updated]
@@ -261,11 +261,11 @@ _Since launch on 1 April 2025 to 13 October 2025_
 
 :::
 
-### User retention
+##### User retention
 
 **18%** of users who signed up 30+ days ago returned to the app within the past 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
 
-### Attendance registers saved
+##### Attendance registers saved
 _As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
 
 ```{r app-attendance-bar, echo=FALSE}
@@ -293,9 +293,65 @@ ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
 ```
 
 #### ECD Connect Partner
-To be added
+_Data from launch with first partner organisation in October 2024 to 15 October 2025_
 
-### Health (CHW Connect)
+::: {.stat-block}
+
+::: {.stat-card .partner-background}
+<p class="stat-number">225</p>
+<p class="stat-label">unique sign-ups</p>
+:::
+
+::: {.stat-card .partner-background}
+<p class="stat-number">61</p>
+<p class="stat-label">preschools added</p>
+:::
+
+::: {.stat-card .partner-background}
+<p class="stat-number">801</p>
+<p class="stat-label">children registered</p>
+:::
+
+:::
+
+##### Attendance registers saved
+_With a smaller user base for ECD Connect Partner, attendance tracking has held fairly steady with a few bumps in engagement around in-person training sessions._
+
+```{r partner-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
+
+df_appattendance <- read.csv("data/partner-attendance.csv", stringsAsFactors = FALSE)
+
+df_appattendance <- df_appattendance %>%
+    mutate(
+      Month = as.Date(paste0(Month, "-01")),
+      Month = format(Month, "%b %Y")
+    )
+
+
+ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
+  geom_bar(stat = "identity",  fill = "#83BB26") +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold"),
+  )
+
+```
+
+
+
+### Health
+
+#### CHW Connect
 
 ```{r gg-visits-bar, echo=FALSE}
 #| message: false
@@ -323,8 +379,8 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
   geom_bar(stat = "identity", colour = "white", width = 0.8) +
   scale_fill_manual(
     values = c(
-      "Number of pregnant client visits" = "#FF80AA",  # pink (top)
-      "Number of child visits" = "#5CBFD8"             # teal (bottom)
+      "Number of pregnant client visits" = "#FF2180",  # pink (top)
+      "Number of child visits" = "#1DBADF"             # teal (bottom)
     ),
     breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
   ) +
@@ -343,7 +399,14 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
     legend.box.margin = margin(t = -10),
     legend.text = element_text(size = 10)
   )
-
-
-
 ```
+
+---
+<br>
+
+## 3. Emerging Insights
+
+### Education
+
+#### Child Demographics
+
