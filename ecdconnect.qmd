@@ -37,6 +37,7 @@ This includes the ECD Connect App (open-access), all ECD Connect Partner version
 #| warning: false
 #| paged-print: true
 
+library(tidyverse)
 library(sf)
 library(dplyr)
 library(ggplot2)
@@ -44,11 +45,10 @@ library(conflicted)
 library(stringr)
 library(patchwork)
 library(scales)
-library(ggplot2)
 library(viridis)
-library (dplyr)
-library(ggplot2)
 library(lubridate)
+library(readr)
+library(leaflet)
 
 conflict_prefer("filter","dplyr")
 
@@ -173,10 +173,6 @@ brand_palette <- c(
   "3501–4000" = "#52607B",
   "4000+" = "#27385A"     # darkest brand blue
 )
-
-# --- Ensure all legend colours show correctly ---
-library(sf)
-library(dplyr)
 
 # Create dummy rows for each BeneficiaryBand
 dummy_levels <- data.frame(
@@ -365,10 +361,6 @@ ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
 #| paged-print: true
 #| out.width: 100%
 
-library(ggplot2)
-library(readr)
-library(dplyr)
-
 visits <- read_csv("data/visits.csv")
 
 # Order months chronologically
@@ -415,5 +407,66 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 ### Education
 
 #### Child Demographics
+
+
+_Map title & notes will go here_
+
+```{r ed-children-map, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+
+
+# --- Load shapefile ---
+# --- Load shapefile (quiet + ensure WGS84 for leaflet) ---
+districts <- st_read("data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
+  st_transform(4326)
+
+# --- Load CSV ---
+codes <- read_csv("data/codes-ed-13-10-2025.csv")
+
+# --- Merge with postal code coordinates ---
+codes_geo <- codes |>
+  left_join(postalcodes_geo, by = c("PostalCode" = "code")) |>
+  drop_na(lat, lon)
+
+# --- Convert to spatial points ---
+codes_sf <- st_as_sf(codes_geo, coords = c("lon", "lat"), crs = 4326)
+
+# --- Create ggplot (static) ---
+p <- ggplot() +
+  geom_sf(data = districts, fill = "grey95", colour = "grey70", linewidth = 0.3) +
+  geom_sf(
+    data = codes_sf,
+    aes(size = TotalChildren,
+        text = paste0("Postal code: ", PostalCode,
+                      "<br>Total children: ", TotalChildren)),
+    colour = "#0072B2", alpha = 0.6
+  ) +
+  scale_size_continuous(range = c(1, 10)) +
+  coord_sf(datum = NA) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  labs(title = "Total Children by Postal Code") +
+  guides(size = "none")
+
+# --- Make interactive map ---
+leaflet() |>
+  addProviderTiles("CartoDB.Positron") |>
+  addPolygons(
+    data = districts,
+    color = "#666", weight = 1, fillOpacity = 0.1
+  ) |>
+  addCircleMarkers(
+    data = codes_sf,
+    radius = ~scales::rescale(TotalChildren, to = c(2, 12)),
+    color = "#0072B2", fillOpacity = 0.6, stroke = FALSE,
+    popup = ~paste0("Total children: ", TotalChildren)
+  )
+
+```
 
 
