@@ -52,13 +52,13 @@ library(leaflet)
 
 conflict_prefer("filter","dplyr")
 
-load("data/sub_places.rda")  
-load("data/postalcodes_geo.rda")
+load("~/Desktop/data/sub_places.rda")  
+load("~/Desktop/data/postalcodes_geo.rda")
 
-df_children <- read.csv("data/codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
-df_clients  <- read.csv("data/GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
+df_children <- read.csv("~/Desktop/data/codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
+df_clients  <- read.csv("~/Desktop/data/GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
 
-districts <- suppressMessages(suppressWarnings(st_read("data/DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
+districts <- suppressMessages(suppressWarnings(st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
 
 df_clients2 <- df_clients %>%
   mutate(
@@ -273,7 +273,7 @@ _As we roll out to more users, we are seeing an increase in the number of attend
 #| paged-print: true
 #| out.width: 100%
 
-df_appattendance <- read.csv("data/app-attendance.csv", stringsAsFactors = FALSE)
+df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
 
 df_appattendance <- df_appattendance %>%
   mutate(
@@ -326,7 +326,7 @@ _With a smaller user base for ECD Connect Partner, attendance tracking has held 
 #| paged-print: true
 #| out.width: 100%
 
-df_appattendance <- read.csv("data/partner-attendance.csv", stringsAsFactors = FALSE)
+df_appattendance <- read.csv("~/Desktop/data/partner-attendance.csv", stringsAsFactors = FALSE)
 
 df_appattendance <- df_appattendance %>%
   mutate(
@@ -361,7 +361,7 @@ ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
 #| paged-print: true
 #| out.width: 100%
 
-visits <- read_csv("data/visits.csv")
+visits <- read_csv("~/Desktop/data/visits.csv")
 
 # Order months chronologically
 visits$Month <- factor(visits$Month, levels = unique(visits$Month))
@@ -419,11 +419,11 @@ _Map title & notes will go here_
 
 # --- Load shapefile ---
 # --- Load shapefile (quiet + ensure WGS84 for leaflet) ---
-districts <- st_read("data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
+districts <- st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
   st_transform(4326)
 
 # --- Load CSV ---
-codes <- read_csv("data/codes-ed-13-10-2025.csv")
+codes <- read_csv("~/Desktop/data/codes-ed-13-10-2025.csv")
 
 # --- Merge with postal code coordinates ---
 codes_geo <- codes |>
