@@ -46,6 +46,9 @@ library(patchwork)
 library(scales)
 library(ggplot2)
 library(viridis)
+library (dplyr)
+library(ggplot2)
+library(lubridate)
 
 conflict_prefer("filter","dplyr")
 
@@ -277,19 +280,23 @@ _As we roll out to more users, we are seeing an increase in the number of attend
 df_appattendance <- read.csv("data/app-attendance.csv", stringsAsFactors = FALSE)
 
 df_appattendance <- df_appattendance %>%
-    mutate(
-      Month = as.Date(paste0(Month, "-01")),
-      Month = format(Month, "%b %Y")
-    )
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
 
-
-ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
-  geom_bar(stat = "identity",  fill = "#FF2180") +
+ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
+  geom_col(fill = "#FF2180") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
   labs(
     x = "Month",
     y = "Number of registers saved"
-  )
-
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 #### ECD Connect Partner
@@ -326,24 +333,23 @@ _With a smaller user base for ECD Connect Partner, attendance tracking has held 
 df_appattendance <- read.csv("data/partner-attendance.csv", stringsAsFactors = FALSE)
 
 df_appattendance <- df_appattendance %>%
-    mutate(
-      Month = as.Date(paste0(Month, "-01")),
-      Month = format(Month, "%b %Y")
-    )
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
 
-
-ggplot(data = df_appattendance, aes(x = Month, y = Registers.Saved)) +
-  geom_bar(stat = "identity",  fill = "#83BB26") +
+ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
+  geom_col(fill = "#83BB26") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
   labs(
     x = "Month",
     y = "Number of registers saved"
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(face = "bold"),
-  )
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -409,4 +415,5 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 ### Education
 
 #### Child Demographics
+
 
