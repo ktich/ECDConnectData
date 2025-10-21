@@ -5,7 +5,7 @@ format: html
 ---
 
 # October 2025 Report
-Data report as of 15 October 2025
+Data report as of 21 October 2025
 
 ## 1. Reach and Scale of ECD Connect
 A summary of ECD Connect's reach.
@@ -20,12 +20,12 @@ This includes the ECD Connect App (open-access), all ECD Connect Partner version
 :::
 
 ::: {.stat-card}
-<p class="stat-number">1,912</p>
+<p class="stat-number">2,063</p>
 <p class="stat-label">unique user sign-ups</p>
 :::
 
 ::: {.stat-card}
-<p class="stat-number">12,300</p>
+<p class="stat-number">12,422</p>
 <p class="stat-label">total number of children added across all platforms</p>
 :::
 
@@ -55,8 +55,8 @@ conflict_prefer("filter","dplyr")
 load("~/Desktop/data/sub_places.rda")  
 load("~/Desktop/data/postalcodes_geo.rda")
 
-df_children <- read.csv("~/Desktop/data/codes-ed-13-10-2025.csv", stringsAsFactors = FALSE)
-df_clients  <- read.csv("~/Desktop/data/GG-location-13-10-2025.csv", stringsAsFactors = FALSE)
+df_children <- read.csv("~/Desktop/data/codes-ed.csv", stringsAsFactors = FALSE)
+df_clients  <- read.csv("~/Desktop/data/GG-location.csv", stringsAsFactors = FALSE)
 
 districts <- suppressMessages(suppressWarnings(st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
 
@@ -244,17 +244,17 @@ _Since launch on 1 April 2025 to 13 October 2025_
 ::: {.stat-block}
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,377</p>
+<p class="stat-number">1,508</p>
 <p class="stat-label">unique sign-ups</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">464</p>
+<p class="stat-number">509</p>
 <p class="stat-label">preschools added</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,434</p>
+<p class="stat-number">1,522</p>
 <p class="stat-label">children registered</p>
 :::
 
@@ -262,7 +262,7 @@ _Since launch on 1 April 2025 to 13 October 2025_
 
 ##### User retention
 
-**18%** of users who signed up 30+ days ago returned to the app within the past 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
+**17%** of users who signed up 30+ days ago returned to the app within the past 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
 
 ##### Attendance registers saved
 _As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
@@ -301,7 +301,7 @@ _Data from launch with first partner organisation in October 2024 to 15 October 
 ::: {.stat-block}
 
 ::: {.stat-card .partner-background}
-<p class="stat-number">225</p>
+<p class="stat-number">226</p>
 <p class="stat-label">unique sign-ups</p>
 :::
 
@@ -311,7 +311,7 @@ _Data from launch with first partner organisation in October 2024 to 15 October 
 :::
 
 ::: {.stat-card .partner-background}
-<p class="stat-number">801</p>
+<p class="stat-number">887</p>
 <p class="stat-label">children registered</p>
 :::
 
@@ -383,7 +383,7 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
     breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
   ) +
   labs(
-    title = "Visits Completed per Month (Jan 2024 – Sep 2025)",
+    title = "Visits Completed per Month (Nov 2024 – Oct 2025)",
     x = NULL,
     y = "Visits Completed",
     fill = NULL
@@ -408,7 +408,6 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 
 #### Child Demographics
 
-
 _Map title & notes will go here_
 
 ```{r ed-children-map, echo=FALSE}
@@ -416,14 +415,13 @@ _Map title & notes will go here_
 #| warning: false
 #| paged-print: true
 
-
 # --- Load shapefile ---
 # --- Load shapefile (quiet + ensure WGS84 for leaflet) ---
 districts <- st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
   st_transform(4326)
 
 # --- Load CSV ---
-codes <- read_csv("~/Desktop/data/codes-ed-13-10-2025.csv")
+codes <- read_csv("~/Desktop/data/codes-ed.csv")
 
 # --- Merge with postal code coordinates ---
 codes_geo <- codes |>
@@ -469,4 +467,69 @@ leaflet() |>
 
 ```
 
+<br>
 
+``` {r ed-children-gender, echo=FALSE }
+#| label: gender-pie-chart
+#| fig-cap: "Gender distribution of children"
+#| echo: false
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+gender_data <- read_csv("~/Desktop/data/child-gender.csv")
+
+gender_data <- gender_data %>%
+mutate(percentage = count / sum(count) * 100,
+label = paste0(gender, " (", round(percentage, 1), "%)"))
+
+ggplot(gender_data, aes(x = "", y = count, fill = gender)) +
+geom_col(width = 1, colour = "white") +
+coord_polar(theta = "y") +
+labs(title = "Gender distribution of children") +
+theme_void() +
+theme(legend.title = element_blank()) +
+geom_text(aes(label = label),
+position = position_stack(vjust = 0.5),
+size = 4) +
+scale_fill_manual(
+values = c(
+"Boys" = "#1DBADF",
+"Girls" = "#27385A",
+"Not recorded" = "#FFD525"
+)
+)
+
+```
+
+<br>
+
+``` {r ed-children-ages, echo=FALSE }
+#| fig-cap: "Number of children by age group"
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(readr)
+
+# Read the CSV
+
+age_data <- read_csv("~/Desktop/data/age-groups-ed.csv")
+
+# Create the bar chart
+ggplot(age_data, aes(x = `Age Group`, y = `Number of Children`)) +
+geom_col(fill = "#1DBADF") +
+labs(title = "Number of children by age group",
+x = "Age Group",
+y = "Number of children") +
+theme_minimal(base_size = 13) +
+theme(
+plot.title = element_text(face = "bold", hjust = 0.5),
+axis.text.x = element_text(angle = 30, hjust = 1)
+)
+```
+
+<br>
