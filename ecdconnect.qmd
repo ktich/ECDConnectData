@@ -679,7 +679,7 @@ p2 <- plot_ly(
 # --- Combine side by side ---
 combined <- subplot(p1, p2, widths = c(0.5, 0.5)) %>%
   layout(
-    margin = list(b = 120, t = 20),  # add bottom space
+    margin = list(b = 120, t = 60),  # add bottom space
     annotations = list(
       list(
         text = "Income Types",
