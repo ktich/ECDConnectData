@@ -543,6 +543,8 @@ _More demographics graphs to be added_
 
 #### Access & Participation
 
+TBD
+
 <br>
 
 #### Business & Finance
@@ -679,7 +681,7 @@ p2 <- plot_ly(
 # --- Combine side by side ---
 combined <- subplot(p1, p2, widths = c(0.5, 0.5)) %>%
   layout(
-    margin = list(b = 120, t = 60),  # add bottom space
+    margin = list(b = 120, t = 80),  # add bottom space
     annotations = list(
       list(
         text = "Income Types",
@@ -708,3 +710,33 @@ combined
 ```
 
 :::
+
+#### Average Child Attendance by Month
+
+```{r child-attendance, echo=FALSE}
+#| warning: false
+#| message: false
+
+# --- Load and prepare data ---
+attendance <- read_csv("~/Desktop/data/child-attendance.csv") %>%
+  arrange(month_start)
+
+# --- Plot ---
+ggplot(attendance, aes(x = reorder(Month, month_start),
+                       y = `Percentage child attendance`)) +
+  geom_col(fill = "#1DBADF") +                           # ECD Connect teal
+  geom_text(aes(label = paste0(round(`Percentage child attendance`, 0), "%")),
+            vjust = -0.5, size = 3.2, colour = "#004C6D") +  # navy text
+  scale_y_continuous(labels = label_percent(scale = 1)) +
+  labs(
+    x = NULL,
+    y = "Child attendance (%)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", colour = "#004C6D"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+```
+
