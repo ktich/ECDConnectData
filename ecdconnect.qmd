@@ -49,6 +49,7 @@ library(viridis)
 library(lubridate)
 library(readr)
 library(leaflet)
+library(plotly)
 
 conflict_prefer("filter","dplyr")
 
@@ -416,7 +417,6 @@ _Map title & notes will go here_
 #| paged-print: true
 
 # --- Load shapefile ---
-# --- Load shapefile (quiet + ensure WGS84 for leaflet) ---
 districts <- st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
   st_transform(4326)
 
@@ -463,6 +463,11 @@ leaflet() |>
     radius = ~scales::rescale(TotalChildren, to = c(2, 12)),
     color = "#0072B2", fillOpacity = 0.6, stroke = FALSE,
     popup = ~paste0("Total children: ", TotalChildren)
+  ) |>
+  setView(lng = 25, lat = -29, zoom = 5) |>
+  setMaxBounds(
+    lng1 = 16, lat1 = -35,   # Southwest corner (approx)
+    lng2 = 33, lat2 = -22    # Northeast corner (approx)
   )
 
 ```
@@ -470,9 +475,7 @@ leaflet() |>
 <br>
 
 ``` {r ed-children-gender, echo=FALSE }
-#| label: gender-pie-chart
 #| fig-cap: "Gender distribution of children"
-#| echo: false
 #| warning: false
 #| message: false
 
@@ -533,3 +536,175 @@ axis.text.x = element_text(angle = 30, hjust = 1)
 ```
 
 <br>
+
+_More demographics graphs to be added_
+
+<br>
+
+#### Access & Participation
+
+<br>
+
+#### Business & Finance
+
+```{r income-expenses, echo=FALSE}
+#| warning: false
+#| message: false
+
+data <- read_csv("~/Desktop/data/income-expenses.csv")
+
+data <- data %>%
+  mutate(Month = as.Date(Month))
+
+data_long <- data %>%
+  select(Month, TotalIncome, TotalExpenses) %>%
+  pivot_longer(cols = c(TotalIncome, TotalExpenses),
+               names_to = "Type",
+               values_to = "Amount")
+
+ggplot() +
+  # Bars (side-by-side)
+  geom_col(data = data_long, aes(x = Month, y = Amount, fill = Type),
+           position = "dodge", width = 25) +
+  
+  # Line for % spent
+  geom_line(data = data %>% filter(!is.na(PercentSpent)),
+            aes(x = Month, y = (PercentSpent / 100) * TotalIncome, group = 1),
+            colour = "black", size = 1, linetype = "dashed") +
+  
+  # Optional % labels
+  geom_text(data = data %>% filter(!is.na(PercentSpent)),
+            aes(x = Month, y = (PercentSpent / 100) * TotalIncome, 
+                label = paste0(PercentSpent, "%")),
+            vjust = -0.5, size = 3, colour = "black") +
+  
+  scale_fill_manual(values = c("TotalIncome" = "#ED1414", "TotalExpenses" = "#83BB26"),
+                    labels = c("Income", "Expenses")) +
+  scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+  scale_x_date(
+  date_breaks = "1 month",
+  date_labels = "%b %Y",
+  expand = c(0.01, 0)
+  ) +
+  labs(
+    title = "Total Preschool Income and Expenses",
+    subtitle = "Total income vs expenses per month across all preschools",
+    x = "Month",
+    y = "Amount (R)",
+    fill = ""
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+```
+
+<br>
+
+##### Income and Expense Categories
+_Percentage breakdown of income and expense categories during the selected period. Each pie shows the share of total income or total expenses contributed by each category._
+
+::: {style="width:100%"}
+
+``` {r expense-income-types, echo=FALSE}
+#| warning: false
+#| message: false
+
+conflicted::conflicts_prefer(plotly::layout)
+
+# --- Income ---
+income_data <- read_csv("~/Desktop/data/income-types.csv") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(Category = factor(Category, levels = Category))
+
+p1 <- plot_ly(
+  data = income_data,
+  labels = ~Category,
+  values = ~Percentage,
+  type = "pie",
+  sort = FALSE,
+  direction = "clockwise",
+  textinfo = "label+percent",
+  textposition = "auto",
+  hoverinfo = "text",
+  text = ~paste(Category, ": ", Percentage, "%"),
+  marker = list(
+    colors = c("#1DBADF", "#FF2180", "#FFD525", "#83BB26", "#27385A"),
+    line = list(color = "white", width = 2)
+  ),
+  domain = list(x = c(0, 0.48))  # left half
+) %>%
+  plotly::layout(
+    showlegend = FALSE,
+    uniformtext = list(minsize = 12, mode = "hide"),
+    startangle = 90,
+    margin = list(l = 0, r = 0, t = 80, b = 0),
+    automargin = TRUE,
+    autosize = TRUE,
+    width = NULL,
+    height = 500
+  )
+
+# --- Expenses ---
+expense_data <- read_csv("~/Desktop/data/expense-types.csv") %>%
+  arrange(desc(Percentage)) %>%
+  mutate(Category = factor(Category, levels = Category))
+
+p2 <- plot_ly(
+  data = expense_data,
+  labels = ~Category,
+  values = ~Percentage,
+  type = "pie",
+  sort = FALSE,
+  direction = "clockwise",
+  textinfo = "label+percent",
+  textposition = "auto",
+  hoverinfo = "text",
+  text = ~paste(Category, ": ", Percentage, "%"),
+  marker = list(
+    colors = c("#1DBADF", "#FF2180", "#FFD525", "#83BB26", "#27385A", "#8EDCEF", "#FF90BF"),
+    line = list(color = "white", width = 2)
+  ),
+  domain = list(x = c(0.52, 1))  # right half
+) %>%
+  plotly::layout(
+    showlegend = FALSE,
+    uniformtext = list(minsize = 12, mode = "hide"),
+    startangle = 90,
+    margin = list(l = 0, r = 0, t = 80, b = 0),
+    automargin = TRUE,
+    autosize = TRUE,
+    width = NULL,
+    height = 500
+  )
+
+# --- Combine side by side ---
+combined <- subplot(p1, p2, widths = c(0.5, 0.5)) %>%
+  layout(
+    margin = list(b = 120, t = 20),  # add bottom space
+    annotations = list(
+      list(
+        text = "Income Types",
+        x = 0.16,   # centre under left pie
+        y = -0.10,  # move below chart
+        xref = "paper",
+        yref = "paper",
+        showarrow = FALSE,
+        font = list(size = 16)
+      ),
+      list(
+        text = "Expense Types",
+        x = 0.83,   # centre under right pie
+        y = -0.10,
+        xref = "paper",
+        yref = "paper",
+        showarrow = FALSE,
+        font = list(size = 16)
+      )
+    )
+  )
+
+combined
+
+
+```
+
+:::
