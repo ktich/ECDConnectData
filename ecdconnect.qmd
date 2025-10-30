@@ -593,10 +593,10 @@ ggplot(attendance, aes(x = reorder(Month, month_start),
 
 ##### Spread of preschool balances (1 August to 28 October 2025)
 _Balance is income minus expenses_
+
 ```{r balances-table, echo=FALSE}
 #| warning: false
 #| message: false
-#| results: 'hide'
 
 options(readr.show_col_types = FALSE)
 
@@ -604,7 +604,6 @@ invisible (balances <- suppressMessages(suppressWarnings(
   readr::read_csv("~/Desktop/data/balances2-ed.csv", show_col_types = FALSE)
 ))
 )
-
 
 # Remove outliers
 balances_clean <- dplyr::filter(
@@ -633,9 +632,6 @@ summary_stats %>%
     decimals = 0,
     use_seps = TRUE
   ) %>%
-  tab_header(
-    title = md("**Preschool Balance Summary (1 Aug – Today)**")
-  ) %>%
   tab_options(
     table.font.size = 14,
     heading.title.font.size = 16,
@@ -644,6 +640,8 @@ summary_stats %>%
   )
 
 ```
+
+<br>
 
 ```{r balances-density, echo=FALSE}
 
