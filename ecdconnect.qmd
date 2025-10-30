@@ -50,6 +50,7 @@ library(lubridate)
 library(readr)
 library(leaflet)
 library(plotly)
+library(gt)
 
 conflict_prefer("filter","dplyr")
 
@@ -235,12 +236,10 @@ ggplot(combined_map2) +
 
 <br>
 
-## 2. Engagement and Activity
-Users are engaging with the ECD Connect tools and submitting data. [to be updated]
-
+## 2. Versions
 ### Education
 #### ECD Connect App
-_Since launch on 1 April 2025 to 13 October 2025_
+_Since launch in April 2025 to October 2025_
 
 ::: {.stat-block}
 
@@ -261,43 +260,14 @@ _Since launch on 1 April 2025 to 13 October 2025_
 
 :::
 
-##### User retention
+##### User Retention
 
-**17%** of users who signed up 30+ days ago returned to the app within the past 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
+- **17%** of users who joined the app over 30 days ago have logged in again after 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
+- **10%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
-##### Attendance registers saved
-_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
-
-```{r app-attendance-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
-
-df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
-
-df_appattendance <- df_appattendance %>%
-  mutate(
-    # Parse your "YYYY-MM" into a proper Date
-    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
-  )
-
-ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
-  geom_col(fill = "#FF2180") +
-  scale_x_date(
-  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
-  date_breaks = "1 month"
-) +
-  labs(
-    x = "Month",
-    y = "Number of registers saved"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
 #### ECD Connect Partner
-_Data from launch with first partner organisation in October 2024 to 15 October 2025_
+_Since launch in October 2024 to October 2025_
 
 ::: {.stat-block}
 
@@ -318,98 +288,53 @@ _Data from launch with first partner organisation in October 2024 to 15 October 
 
 :::
 
-##### Attendance registers saved
-_With a smaller user base for ECD Connect Partner, attendance tracking has held fairly steady with a few bumps in engagement around in-person training sessions._
+##### User Retention
 
-```{r partner-attendance-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
-
-df_appattendance <- read.csv("~/Desktop/data/partner-attendance.csv", stringsAsFactors = FALSE)
-
-df_appattendance <- df_appattendance %>%
-  mutate(
-    # Parse your "YYYY-MM" into a proper Date
-    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
-  )
-
-ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
-  geom_col(fill = "#83BB26") +
-  scale_x_date(
-  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
-  date_breaks = "1 month"
-) +
-  labs(
-    x = "Month",
-    y = "Number of registers saved"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-
-
+- **26%** of users who joined the app over 30 days ago have logged in again after 30 days.
+- **13%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 ### Health
 
 #### CHW Connect
+_Since launch in April 2024 to October 2025_
 
-```{r gg-visits-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
+::: {.stat-block}
 
-visits <- read_csv("~/Desktop/data/visits.csv")
+::: {.stat-card .gg-background}
+<p class="stat-number">342</p>
+<p class="stat-label">CHWs registered</p>
+:::
 
-# Order months chronologically
-visits$Month <- factor(visits$Month, levels = unique(visits$Month))
+::: {.stat-card .gg-background}
+<p class="stat-number">60 160</p>
+<p class="stat-label">child visits completed</p>
+:::
 
-# Ensure Visit Type order (bottom first)
-visits$`Visit Type` <- factor(
-  visits$`Visit Type`,
-  levels = c("Number of pregnant client visits", "Number of child visits")
-)
+::: {.stat-card .gg-background}
+<p class="stat-number">6 495</p>
+<p class="stat-label">pregnant client visits completed</p>
+:::
 
-# Stacked bar chart with reversed legend order
-ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
-  geom_bar(stat = "identity", colour = "white", width = 0.8) +
-  scale_fill_manual(
-    values = c(
-      "Number of pregnant client visits" = "#FF2180",  # pink (top)
-      "Number of child visits" = "#1DBADF"             # teal (bottom)
-    ),
-    breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
-  ) +
-  labs(
-    title = "Visits Completed per Month (Nov 2024 – Oct 2025)",
-    x = NULL,
-    y = "Visits Completed",
-    fill = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(face = "bold"),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.text = element_text(size = 10)
-  )
-```
+:::
+
+##### User Retention
+
+- **79%** of CHWs who joined the app over 30 days ago have logged in again after 30 days.
+- **35%** of CHWs who signed up over 30 days ago have logged in within the past month.
+
+<br>
 
 ---
+
 <br>
 
 ## 3. Emerging Insights
 
 ### Education
 
-#### Child Demographics
+#### 1. Child Demographics
 
-_Map title & notes will go here_
+##### Geographic Spread of Registered Children
 
 ```{r ed-children-map, echo=FALSE}
 #| message: false
@@ -474,8 +399,9 @@ leaflet() |>
 
 <br>
 
+##### Child Gender Distribution
+
 ``` {r ed-children-gender, echo=FALSE }
-#| fig-cap: "Gender distribution of children"
 #| warning: false
 #| message: false
 
@@ -492,7 +418,6 @@ label = paste0(gender, " (", round(percentage, 1), "%)"))
 ggplot(gender_data, aes(x = "", y = count, fill = gender)) +
 geom_col(width = 1, colour = "white") +
 coord_polar(theta = "y") +
-labs(title = "Gender distribution of children") +
 theme_void() +
 theme(legend.title = element_blank()) +
 geom_text(aes(label = label),
@@ -510,13 +435,11 @@ values = c(
 
 <br>
 
+##### Child Age Distribution
+
 ``` {r ed-children-ages, echo=FALSE }
-#| fig-cap: "Number of children by age group"
 #| warning: false
 #| message: false
-
-library(ggplot2)
-library(readr)
 
 # Read the CSV
 
@@ -525,8 +448,7 @@ age_data <- read_csv("~/Desktop/data/age-groups-ed.csv")
 # Create the bar chart
 ggplot(age_data, aes(x = `Age Group`, y = `Number of Children`)) +
 geom_col(fill = "#1DBADF") +
-labs(title = "Number of children by age group",
-x = "Age Group",
+labs(x = "Age Group",
 y = "Number of children") +
 theme_minimal(base_size = 13) +
 theme(
@@ -537,17 +459,220 @@ axis.text.x = element_text(angle = 30, hjust = 1)
 
 <br>
 
-_More demographics graphs to be added_
+##### Family Grant Types
+
+```{r grants-ed, echo=FALSE}
+#| warning: false
+#| message: false
+
+# Load data
+grants <- read_csv("~/Desktop/data/grants-ed.csv")
+
+# Clean up labels
+grants <- grants %>%
+  mutate(type = recode(type,
+                       "None selected" = "No response"))
+
+# Plot
+ggplot(grants, aes(x = fct_reorder(type, number_of_children), 
+                   y = number_of_children)) +
+  geom_col(fill = "#1DBADF", show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Number of children"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+_More graphs to be added_
 
 <br>
 
-#### Access & Participation
+#### 2. Access & Participation
 
-TBD
+##### Attendance registers saved (ECD Connect App)
+_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
+
+```{r app-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
+
+df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
+
+df_appattendance <- df_appattendance %>%
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
+
+ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
+  geom_col(fill = "#FF2180") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+##### Attendance registers saved - ECD Connect Partner
+_With a smaller user base for ECD Connect Partner, attendance tracking has held fairly steady with a few bumps in engagement around in-person training sessions._
+
+```{r partner-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
+
+df_appattendance <- read.csv("~/Desktop/data/partner-attendance.csv", stringsAsFactors = FALSE)
+
+df_appattendance <- df_appattendance %>%
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
+
+ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
+  geom_col(fill = "#83BB26") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+##### Average Child Attendance by Month
+
+
+```{r child-attendance, echo=FALSE}
+#| warning: false
+#| message: false
+
+# --- Load and prepare data ---
+attendance <- read_csv("~/Desktop/data/child-attendance.csv") %>%
+  arrange(month_start)
+
+# --- Plot ---
+ggplot(attendance, aes(x = reorder(Month, month_start),
+                       y = `Percentage child attendance`)) +
+  geom_col(fill = "#1DBADF") +                           # ECD Connect teal
+  geom_text(aes(label = paste0(round(`Percentage child attendance`, 0), "%")),
+            vjust = -0.5, size = 3.2, colour = "#004C6D") +  # navy text
+  scale_y_continuous(labels = label_percent(scale = 1)) +
+  labs(
+    x = NULL,
+    y = "Child attendance (%)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", colour = "#004C6D"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.minor = element_blank()
+  )
+```
 
 <br>
 
-#### Business & Finance
+#### 3. Business & Finance
+
+##### Spread of preschool balances (1 August to 28 October 2025)
+_Balance is income minus expenses_
+```{r balances-table, echo=FALSE}
+#| warning: false
+#| message: false
+#| results: 'hide'
+
+options(readr.show_col_types = FALSE)
+
+invisible (balances <- suppressMessages(suppressWarnings(
+  readr::read_csv("~/Desktop/data/balances2-ed.csv", show_col_types = FALSE)
+))
+)
+
+
+# Remove outliers
+balances_clean <- dplyr::filter(
+  balances,
+  balance > mean(balance) - 3*sd(balance),
+  balance < mean(balance) + 3*sd(balance)
+)
+
+# Compute summary stats (no range)
+summary_stats <- balances_clean %>%
+  summarise(
+    `Total Preschools` = n(),
+    `Mean Balance (R)` = mean(balance),
+    `Median Balance (R)` = median(balance),
+    `Minimum Balance (R)` = min(balance),
+    `Maximum Balance (R)` = max(balance),
+    `Standard Deviation (R)` = sd(balance)
+  ) %>%
+  mutate(across(where(is.numeric), round, 0))
+
+# Pretty table
+summary_stats %>%
+  gt() %>%
+  fmt_number(
+    columns = everything(),
+    decimals = 0,
+    use_seps = TRUE
+  ) %>%
+  tab_header(
+    title = md("**Preschool Balance Summary (1 Aug – Today)**")
+  ) %>%
+  tab_options(
+    table.font.size = 14,
+    heading.title.font.size = 16,
+    table.border.top.width = 0,
+    table.border.bottom.width = 0
+  )
+
+```
+
+```{r balances-density, echo=FALSE}
+
+#| warning: false
+#| message: false
+
+# Read in the data
+balances <- read_csv("~/Desktop/data/balances2-ed.csv")
+
+# Create histogram (one extreme outlier removed - user submitted the same income 3 times)
+balances_clean <- dplyr::filter(
+  balances,
+  balance > mean(balance) - 3*sd(balance),
+  balance < mean(balance) + 3*sd(balance)
+)
+
+ggplot(balances_clean, aes(x = balance)) +
+  geom_histogram(binwidth = 3000, fill = "steelblue", colour = "white") +
+  scale_x_continuous(labels = comma, breaks = pretty_breaks(n = 7)) +
+  scale_y_continuous(labels = comma) +
+  labs(
+    x = "Balance (R)",
+    y = "Number of Preschools"
+  ) +
+  theme_minimal()
+```
+
+##### Total Preschool Income and Expenses"
+_Total income vs expenses per month across all preschools_
 
 ```{r income-expenses, echo=FALSE}
 #| warning: false
@@ -589,8 +714,6 @@ ggplot() +
   expand = c(0.01, 0)
   ) +
   labs(
-    title = "Total Preschool Income and Expenses",
-    subtitle = "Total income vs expenses per month across all preschools",
     x = "Month",
     y = "Amount (R)",
     fill = ""
@@ -711,32 +834,178 @@ combined
 
 :::
 
-#### Average Child Attendance by Month
+<br>
 
-```{r child-attendance, echo=FALSE}
+##### DBE Subsidy
+
+##### Preschools Recording DBE Subsidies
+_Among those who logged income and expenses._
+
+```{r subsidy, echo=FALSE}
 #| warning: false
 #| message: false
 
-# --- Load and prepare data ---
-attendance <- read_csv("~/Desktop/data/child-attendance.csv") %>%
-  arrange(month_start)
+# Read data
+dbe <- read_csv("~/Desktop/data/dbe_subsidy.csv")
 
-# --- Plot ---
-ggplot(attendance, aes(x = reorder(Month, month_start),
-                       y = `Percentage child attendance`)) +
-  geom_col(fill = "#1DBADF") +                           # ECD Connect teal
-  geom_text(aes(label = paste0(round(`Percentage child attendance`, 0), "%")),
-            vjust = -0.5, size = 3.2, colour = "#004C6D") +  # navy text
-  scale_y_continuous(labels = label_percent(scale = 1)) +
+# Reshape data for stacking
+dbe_long <- dbe |>
+  select(Month, preschools_with_subsidy, total_preschools) |>
+  mutate(non_subsidy = total_preschools - preschools_with_subsidy) |>
+  pivot_longer(cols = c(preschools_with_subsidy, non_subsidy),
+               names_to = "category", values_to = "count")
+
+# Define colours
+cols <- c(
+  "preschools_with_subsidy" = "#83BB26",  # green
+  "non_subsidy" = "#1DBADF"               # blue
+)
+
+# Plot
+ggplot(dbe_long, aes(x = Month, y = count, fill = category)) +
+  geom_col(alpha = 0.9) +
+  scale_fill_manual(
+    values = cols,
+    labels = c("With DBE subsidy", "No DBE subsidy"),
+    name = NULL
+  ) +
+  scale_y_continuous(labels = label_number(big.mark = " ")) +
   labs(
     x = NULL,
-    y = "Child attendance (%)"
+    y = "Number of preschools"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    legend.position = "top",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+    
+
+```
+
+```{r avg-subsidy, echo=FALSE}
+#| warning: false
+#| message: false
+
+# Read data
+dbe <- read_csv("~/Desktop/data/dbe_subsidy.csv")
+
+# Reshape data for stacking
+dbe_long <- dbe |>
+  select(Month, preschools_with_subsidy, total_preschools) |>
+  mutate(non_subsidy = total_preschools - preschools_with_subsidy) |>
+  pivot_longer(cols = c(preschools_with_subsidy, non_subsidy),
+               names_to = "category", values_to = "count")
+
+# Define colours
+cols <- c(
+  "preschools_with_subsidy" = "#83BB26",  # green
+  "non_subsidy" = "#1DBADF"               # blue
+)
+
+# Plot
+ggplot(dbe, aes(x = Month, y = average_subsidy_amount)) +
+  geom_line(colour = "#FF2180", linewidth = 1.2) +
+  geom_point(colour = "#FF2180", size = 2.5) +
+  geom_text(aes(label = scales::number(average_subsidy_amount, big.mark = " ")),
+            vjust = -0.7, size = 3.2, colour = "#27385A") +
+  scale_y_continuous(labels = scales::label_number(big.mark = " ")) +
+  labs(
+    x = NULL,
+    y = "Average DBE subsidy (R)",
+    title = "Average DBE Subsidy per Preschool"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+
+```{r balances, echo=FALSE}
+#| warning: false
+#| message: false
+
+# Read data
+data <- read_csv("~/Desktop/data/balances-ed.csv")
+
+# Preserve CSV order as factor levels
+data <- data %>%
+  mutate(balance_range = factor(balance_range, levels = unique(balance_range)))
+
+# Plot in CSV order (no reorder())
+ggplot(data, aes(x = number_preschools, 
+                 y = balance_range)) +
+  geom_col(fill = "#3b82f6") +
+  geom_text(aes(label = number_preschools), hjust = -0.1, size = 4) +
+  labs(
+    x = "Number of Preschools",
+    y = "Balance Range (Rands)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.y = element_text(size = 12),
+    panel.grid.major.y = element_blank()
+  ) +
+  expand_limits(x = max(data$number_preschools) * 1.1)
+
+```
+
+
+<br>
+--
+
+### Health
+
+#### CHW Connect
+
+```{r gg-visits-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
+
+visits <- read_csv("~/Desktop/data/visits.csv")
+
+# Order months chronologically
+visits$Month <- factor(visits$Month, levels = unique(visits$Month))
+
+# Ensure Visit Type order (bottom first)
+visits$`Visit Type` <- factor(
+  visits$`Visit Type`,
+  levels = c("Number of pregnant client visits", "Number of child visits")
+)
+
+# Stacked bar chart with reversed legend order
+ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
+  geom_bar(stat = "identity", colour = "white", width = 0.8) +
+  scale_fill_manual(
+    values = c(
+      "Number of pregnant client visits" = "#FF2180",  # pink (top)
+      "Number of child visits" = "#1DBADF"             # teal (bottom)
+    ),
+    breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
+  ) +
+  labs(
+    title = "Visits Completed per Month (Nov 2024 – Oct 2025)",
+    x = NULL,
+    y = "Visits Completed",
+    fill = NULL
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    plot.title = element_text(face = "bold", colour = "#004C6D"),
+    panel.grid.minor = element_blank(),
     axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid.minor = element_blank()
+    plot.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.text = element_text(size = 10)
   )
 ```
-

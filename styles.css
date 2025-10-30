@@ -24,7 +24,11 @@
 }
 
 .partner-background {
-  background-color: #E6F1D4;
+  background-color: #FFD3E6;
+}
+
+.gg-background {
+  background-color: #FFD3E6;
 }
 
 .stat-number {
@@ -38,3 +42,41 @@
   color: #666;
   margin-top: 0.25rem;
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-family: "Inter", sans-serif;
+    font-size: 0.95rem;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #2563eb;
+    color: white;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  tbody tr:hover {
+    background-color: #eff6ff;
+  }
+
+  th:first-child, td:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  th:last-child, td:last-child {
+    border-top-right-radius: 12px;
+  }
