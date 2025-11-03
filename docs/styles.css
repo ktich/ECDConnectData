@@ -38,7 +38,14 @@
 }
 
 .stat-label {
+  font-size: 1rem;
+  color: #212121;
+  margin-top: 0.25rem;
+}
+
+.stat-note {
   font-size: 0.9rem;
+  font-style: italic;
   color: #666;
   margin-top: 0.25rem;
 }
@@ -80,3 +87,29 @@ table {
   th:last-child, td:last-child {
     border-top-right-radius: 12px;
   }
+  
+.chart-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.chart-box {
+  flex: 1 1 48%;
+  min-width: 350px;
+  min-height: 600px;
+}
+
+.plotly, .ggplot {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.card {
+  box-shadow: none !important;
+  border: none !important;
+}
+

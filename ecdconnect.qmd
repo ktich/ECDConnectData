@@ -5,7 +5,7 @@ format: html
 ---
 
 # October 2025 Report
-Data report as of 21 October 2025
+Data report as of 31 October 2025
 
 ## 1. Reach and Scale of ECD Connect
 A summary of ECD Connect's reach.
@@ -20,12 +20,12 @@ This includes the ECD Connect App (open-access), all ECD Connect Partner version
 :::
 
 ::: {.stat-card}
-<p class="stat-number">2,063</p>
+<p class="stat-number">2,160</p>
 <p class="stat-label">unique user sign-ups</p>
 :::
 
 ::: {.stat-card}
-<p class="stat-number">12,422</p>
+<p class="stat-number">12,703</p>
 <p class="stat-label">total number of children added across all platforms</p>
 :::
 
@@ -244,17 +244,17 @@ _Since launch in April 2025 to October 2025_
 ::: {.stat-block}
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,508</p>
+<p class="stat-number">1,605</p>
 <p class="stat-label">unique sign-ups</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">509</p>
+<p class="stat-number">537</p>
 <p class="stat-label">preschools added</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,522</p>
+<p class="stat-number">1,637</p>
 <p class="stat-label">children registered</p>
 :::
 
@@ -263,7 +263,7 @@ _Since launch in April 2025 to October 2025_
 ##### User Retention
 
 - **17%** of users who joined the app over 30 days ago have logged in again after 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
-- **10%** of practitioners who signed up over 30 days ago have logged in within the past month.
+- **8%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 
 #### ECD Connect Partner
@@ -282,7 +282,7 @@ _Since launch in October 2024 to October 2025_
 :::
 
 ::: {.stat-card .partner-background}
-<p class="stat-number">887</p>
+<p class="stat-number">1,020</p>
 <p class="stat-label">children registered</p>
 :::
 
@@ -291,7 +291,7 @@ _Since launch in October 2024 to October 2025_
 ##### User Retention
 
 - **26%** of users who joined the app over 30 days ago have logged in again after 30 days.
-- **13%** of practitioners who signed up over 30 days ago have logged in within the past month.
+- **12%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 ### Health
 
@@ -306,12 +306,12 @@ _Since launch in April 2024 to October 2025_
 :::
 
 ::: {.stat-card .gg-background}
-<p class="stat-number">60 160</p>
+<p class="stat-number">60 202</p>
 <p class="stat-label">child visits completed</p>
 :::
 
 ::: {.stat-card .gg-background}
-<p class="stat-number">6 495</p>
+<p class="stat-number">6 501</p>
 <p class="stat-label">pregnant client visits completed</p>
 :::
 
@@ -386,7 +386,7 @@ leaflet() |>
   addCircleMarkers(
     data = codes_sf,
     radius = ~scales::rescale(TotalChildren, to = c(2, 12)),
-    color = "#0072B2", fillOpacity = 0.6, stroke = FALSE,
+    color = "#1DBADF", fillOpacity = 0.8, stroke = FALSE,
     popup = ~paste0("Total children: ", TotalChildren)
   ) |>
   setView(lng = 25, lat = -29, zoom = 5) |>
@@ -399,45 +399,74 @@ leaflet() |>
 
 <br>
 
+
+
+<div class="chart-row">
+
+<div class="chart-box">
+
 ##### Child Gender Distribution
 
 ``` {r ed-children-gender, echo=FALSE }
 #| warning: false
 #| message: false
 
-library(ggplot2)
-library(readr)
-library(dplyr)
+conflicted::conflicts_prefer(plotly::layout)
 
+# Load data
 gender_data <- read_csv("~/Desktop/data/child-gender.csv")
 
+# Prepare data
 gender_data <- gender_data %>%
-mutate(percentage = count / sum(count) * 100,
-label = paste0(gender, " (", round(percentage, 1), "%)"))
+  arrange(desc(count)) %>%
+  mutate(
+    gender = factor(gender, levels = gender),
+    Percentage = round(count / sum(count) * 100, 1)
+  )
 
-ggplot(gender_data, aes(x = "", y = count, fill = gender)) +
-geom_col(width = 1, colour = "white") +
-coord_polar(theta = "y") +
-theme_void() +
-theme(legend.title = element_blank()) +
-geom_text(aes(label = label),
-position = position_stack(vjust = 0.5),
-size = 4) +
-scale_fill_manual(
-values = c(
-"Boys" = "#1DBADF",
-"Girls" = "#27385A",
-"Not recorded" = "#FFD525"
-)
-)
+# Create interactive pie
+plot_ly(
+  data = gender_data,
+  labels = ~gender,
+  values = ~count,
+  type = "pie",
+  sort = FALSE,
+  direction = "clockwise",
+  textinfo = "label+percent",
+  textposition = "auto",
+  hoverinfo = "text",
+  text = ~paste(gender, ": ", Percentage, "%"),
+  marker = list(
+    colors = c("#83BB26", "#1DBADF", "#FFD525"),
+    line = list(color = "white", width = 2)
+  )
+) %>%
+  layout(
+  showlegend = FALSE,
+  uniformtext = list(minsize = 12, mode = "hide"),
+  startangle = 90,
+  margin = list(l = 0, r = 0, t = 10, b = 0),
+  automargin = TRUE,
+  autosize = TRUE,
+  height = NULL,
+  width = NULL,
+  piecolorway = c("#83BB26", "#1DBADF", "#FFD525"),
+  annotations = list(),
+  # 👇 this is what enables the leader (connector) lines
+  showlegend = FALSE,
+  # Important connector line setting:
+  newshape = list(line = list(color = "grey", width = 1))
+) %>%
+  config(responsive = TRUE)
+
 
 ```
+</div>
 
-<br>
-
+<div class="chart-box">
 ##### Child Age Distribution
 
-``` {r ed-children-ages, echo=FALSE }
+``` {r ed-children-ages, echo=FALSE, fig.height = 8 }
 #| warning: false
 #| message: false
 
@@ -458,6 +487,9 @@ axis.text.x = element_text(angle = 30, hjust = 1)
 ```
 
 <br>
+
+
+</div></div>
 
 ##### Family Grant Types
 
@@ -491,69 +523,17 @@ _More graphs to be added_
 
 #### 2. Access & Participation
 
-##### Attendance registers saved (ECD Connect App)
-_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
+##### Attendance registers saved
 
-```{r app-attendance-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
+::: {.stat-block}
 
-df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
+::: {.stat-card}
+<p class="stat-number">10%</p>
+<p class="stat-label">active practitioners tracked attendance in October 2025</p>
+<p class="stat-note">Active = logged in within the past month</p>
+:::
 
-df_appattendance <- df_appattendance %>%
-  mutate(
-    # Parse your "YYYY-MM" into a proper Date
-    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
-  )
-
-ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
-  geom_col(fill = "#FF2180") +
-  scale_x_date(
-  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
-  date_breaks = "1 month"
-) +
-  labs(
-    x = "Month",
-    y = "Number of registers saved"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-
-##### Attendance registers saved - ECD Connect Partner
-_With a smaller user base for ECD Connect Partner, attendance tracking has held fairly steady with a few bumps in engagement around in-person training sessions._
-
-```{r partner-attendance-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
-
-df_appattendance <- read.csv("~/Desktop/data/partner-attendance.csv", stringsAsFactors = FALSE)
-
-df_appattendance <- df_appattendance %>%
-  mutate(
-    # Parse your "YYYY-MM" into a proper Date
-    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
-  )
-
-ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
-  geom_col(fill = "#83BB26") +
-  scale_x_date(
-  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
-  date_breaks = "1 month"
-) +
-  labs(
-    x = "Month",
-    y = "Number of registers saved"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
+:::
 
 
 
