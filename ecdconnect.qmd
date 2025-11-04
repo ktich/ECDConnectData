@@ -517,8 +517,6 @@ ggplot(grants, aes(x = fct_reorder(type, number_of_children),
   theme_minimal(base_size = 13)
 ```
 
-_More graphs to be added_
-
 <br>
 
 #### 2. Access & Participation
@@ -535,7 +533,7 @@ _More graphs to be added_
 
 :::
 
-
+<br>
 
 ##### Average Child Attendance by Month
 
@@ -599,8 +597,7 @@ summary_stats <- balances_clean %>%
     `Mean Balance (R)` = mean(balance),
     `Median Balance (R)` = median(balance),
     `Minimum Balance (R)` = min(balance),
-    `Maximum Balance (R)` = max(balance),
-    `Standard Deviation (R)` = sd(balance)
+    `Maximum Balance (R)` = max(balance)
   ) %>%
   mutate(across(where(is.numeric), round, 0))
 
@@ -647,57 +644,6 @@ ggplot(balances_clean, aes(x = balance)) +
     y = "Number of Preschools"
   ) +
   theme_minimal()
-```
-
-##### Total Preschool Income and Expenses"
-_Total income vs expenses per month across all preschools_
-
-```{r income-expenses, echo=FALSE}
-#| warning: false
-#| message: false
-
-data <- read_csv("~/Desktop/data/income-expenses.csv")
-
-data <- data %>%
-  mutate(Month = as.Date(Month))
-
-data_long <- data %>%
-  select(Month, TotalIncome, TotalExpenses) %>%
-  pivot_longer(cols = c(TotalIncome, TotalExpenses),
-               names_to = "Type",
-               values_to = "Amount")
-
-ggplot() +
-  # Bars (side-by-side)
-  geom_col(data = data_long, aes(x = Month, y = Amount, fill = Type),
-           position = "dodge", width = 25) +
-  
-  # Line for % spent
-  geom_line(data = data %>% filter(!is.na(PercentSpent)),
-            aes(x = Month, y = (PercentSpent / 100) * TotalIncome, group = 1),
-            colour = "black", size = 1, linetype = "dashed") +
-  
-  # Optional % labels
-  geom_text(data = data %>% filter(!is.na(PercentSpent)),
-            aes(x = Month, y = (PercentSpent / 100) * TotalIncome, 
-                label = paste0(PercentSpent, "%")),
-            vjust = -0.5, size = 3, colour = "black") +
-  
-  scale_fill_manual(values = c("TotalIncome" = "#ED1414", "TotalExpenses" = "#83BB26"),
-                    labels = c("Income", "Expenses")) +
-  scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
-  scale_x_date(
-  date_breaks = "1 month",
-  date_labels = "%b %Y",
-  expand = c(0.01, 0)
-  ) +
-  labs(
-    x = "Month",
-    y = "Amount (R)",
-    fill = ""
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(legend.position = "top")
 ```
 
 <br>
