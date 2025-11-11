@@ -8,7 +8,7 @@ format: html
 Data report as of 31 October 2025
 
 ## 1. Reach and Scale of ECD Connect
-A summary of ECD Connect's reach.
+ECD Connect has grown rapidly since launch, with adoption across both education and health. The figures below show our combined footprint, demonstrating early traction.
 
 This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect. The numbers below represent all numbers since launch.
 
@@ -330,6 +330,7 @@ _Since launch in April 2024 to October 2025_
 
 ## 3. Emerging Insights
 
+
 ### Education
 
 #### 1. Child Demographics
@@ -522,21 +523,39 @@ ggplot(grants, aes(x = fct_reorder(type, number_of_children),
 #### 2. Access & Participation
 
 ##### Attendance registers saved
+_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
 
-::: {.stat-block}
+```{r app-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
 
-::: {.stat-card}
-<p class="stat-number">10%</p>
-<p class="stat-label">active practitioners tracked attendance in October 2025</p>
-<p class="stat-note">Active = logged in within the past month</p>
-:::
+df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
 
-:::
+df_appattendance <- df_appattendance %>%
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
+
+ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
+  geom_col(fill = "#FF2180") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
 <br>
 
 ##### Average Child Attendance by Month
-
 
 ```{r child-attendance, echo=FALSE}
 #| warning: false
@@ -569,7 +588,7 @@ ggplot(attendance, aes(x = reorder(Month, month_start),
 
 #### 3. Business & Finance
 
-##### Spread of preschool balances (1 August to 28 October 2025)
+##### Spread of preschool balances (1 August to 31 October 2025)
 _Balance is income minus expenses_
 
 ```{r balances-table, echo=FALSE}
@@ -765,130 +784,97 @@ combined
 ##### Preschools Recording DBE Subsidies
 _Among those who logged income and expenses._
 
-```{r subsidy, echo=FALSE}
-#| warning: false
-#| message: false
+::: {.stat-block}
 
-# Read data
-dbe <- read_csv("~/Desktop/data/dbe_subsidy.csv")
+::: {.stat-card}
+<p class="stat-number">17</p>
+<p class="stat-label">preschools logged DBE subsidy</p>
+:::
 
-# Reshape data for stacking
-dbe_long <- dbe |>
-  select(Month, preschools_with_subsidy, total_preschools) |>
-  mutate(non_subsidy = total_preschools - preschools_with_subsidy) |>
-  pivot_longer(cols = c(preschools_with_subsidy, non_subsidy),
-               names_to = "category", values_to = "count")
+::: {.stat-card}
+<p class="stat-number">R 89,040</p>
+<p class="stat-label">average DBE subsidy amount received</p>
+:::
 
-# Define colours
-cols <- c(
-  "preschools_with_subsidy" = "#83BB26",  # green
-  "non_subsidy" = "#1DBADF"               # blue
-)
+::: {.stat-card}
+<p class="stat-number">R 45,793</p>
+<p class="stat-label">median DBE subsidy amount</p>
+:::
 
-# Plot
-ggplot(dbe_long, aes(x = Month, y = count, fill = category)) +
-  geom_col(alpha = 0.9) +
-  scale_fill_manual(
-    values = cols,
-    labels = c("With DBE subsidy", "No DBE subsidy"),
-    name = NULL
-  ) +
-  scale_y_continuous(labels = label_number(big.mark = " ")) +
-  labs(
-    x = NULL,
-    y = "Number of preschools"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    legend.position = "top",
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
+::: {.stat-card}
+<p class="stat-number">50</p>
+<p class="stat-label">children covered on average</p>
+:::
 
+::: {.stat-card}
+<p class="stat-number">15</p>
+<p class="stat-label">minimum number of children covered</p>
+:::
 
-    
+::: {.stat-card}
+<p class="stat-number">100</p>
+<p class="stat-label">maximum number of children covered</p>
+:::
 
-```
-
-```{r avg-subsidy, echo=FALSE}
-#| warning: false
-#| message: false
-
-# Read data
-dbe <- read_csv("~/Desktop/data/dbe_subsidy.csv")
-
-# Reshape data for stacking
-dbe_long <- dbe |>
-  select(Month, preschools_with_subsidy, total_preschools) |>
-  mutate(non_subsidy = total_preschools - preschools_with_subsidy) |>
-  pivot_longer(cols = c(preschools_with_subsidy, non_subsidy),
-               names_to = "category", values_to = "count")
-
-# Define colours
-cols <- c(
-  "preschools_with_subsidy" = "#83BB26",  # green
-  "non_subsidy" = "#1DBADF"               # blue
-)
-
-# Plot
-ggplot(dbe, aes(x = Month, y = average_subsidy_amount)) +
-  geom_line(colour = "#FF2180", linewidth = 1.2) +
-  geom_point(colour = "#FF2180", size = 2.5) +
-  geom_text(aes(label = scales::number(average_subsidy_amount, big.mark = " ")),
-            vjust = -0.7, size = 3.2, colour = "#27385A") +
-  scale_y_continuous(labels = scales::label_number(big.mark = " ")) +
-  labs(
-    x = NULL,
-    y = "Average DBE subsidy (R)",
-    title = "Average DBE Subsidy per Preschool"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid.minor = element_blank(),
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
-
-```
-
-```{r balances, echo=FALSE}
-#| warning: false
-#| message: false
-
-# Read data
-data <- read_csv("~/Desktop/data/balances-ed.csv")
-
-# Preserve CSV order as factor levels
-data <- data %>%
-  mutate(balance_range = factor(balance_range, levels = unique(balance_range)))
-
-# Plot in CSV order (no reorder())
-ggplot(data, aes(x = number_preschools, 
-                 y = balance_range)) +
-  geom_col(fill = "#3b82f6") +
-  geom_text(aes(label = number_preschools), hjust = -0.1, size = 4) +
-  labs(
-    x = "Number of Preschools",
-    y = "Balance Range (Rands)"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.y = element_text(size = 12),
-    panel.grid.major.y = element_blank()
-  ) +
-  expand_limits(x = max(data$number_preschools) * 1.1)
-
-```
-
+:::
 
 <br>
---
+
+##### Preschool Fees
+_Preschool fee information, based on the 49 preschools which have added income/expenses to the app._
+
+::: {.stat-block}
+
+::: {.stat-card}
+<p class="stat-number">36</p>
+<p class="stat-label">preschools logged preschool fees</p>
+:::
+
+::: {.stat-card}
+<p class="stat-number">R 438</p>
+<p class="stat-label">average preschool fee amount received per child</p>
+:::
+
+::: {.stat-card}
+<p class="stat-number">70.1%</p>
+<p class="stat-label">average % of children who paid preschool fees per month (out of all children at preschools where fees were logged)</p>
+:::
+
+:::
+
+<br>
+
+#### 4. Teaching & Learning
+
+##### Lesson planning
+The classroom activities and resources sections of the app have generated a lot of interest.
+
+::: {.stat-block}
+
+::: {.stat-card}
+<p class="stat-number">221</p>
+<p class="stat-label">users have used the lesson planning tool</p>
+:::
+
+::: {.stat-card}
+<p class="stat-number">31</p>
+<p class="stat-label">average number of days planned per practitioner (counting practitioners who have used the lesson planning tool at least once)</p>
+:::
+
+:::
+
+---
+
+Additional thoughts in Education. As we get a larger user base, particularly for the ECD Connect App, we are also able to send out comms via WA and learn more about our users, etc. -- so e.g. the points competition form & results.
+
+---
+
 
 ### Health
 
 #### CHW Connect
+
+##### Visits Completed per Month (November 2024 to October 2025)
 
 ```{r gg-visits-bar, echo=FALSE}
 #| message: false
@@ -918,7 +904,6 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
     breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
   ) +
   labs(
-    title = "Visits Completed per Month (Nov 2024 – Oct 2025)",
     x = NULL,
     y = "Visits Completed",
     fill = NULL

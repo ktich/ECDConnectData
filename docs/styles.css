@@ -49,59 +49,18 @@
   color: #666;
   margin-top: 0.25rem;
 }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    font-family: "Inter", sans-serif;
-    font-size: 0.95rem;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-
-  th, td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-  }
-
-  thead {
-    background-color: #2563eb;
-    color: white;
-  }
-
-  tbody tr:nth-child(even) {
-    background-color: #f9fafb;
-  }
-
-  tbody tr:hover {
-    background-color: #eff6ff;
-  }
-
-  th:first-child, td:first-child {
-    border-top-left-radius: 12px;
-  }
-
-  th:last-child, td:last-child {
-    border-top-right-radius: 12px;
-  }
   
 .chart-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1.5fr 2fr;
   gap: 24px;
   margin-top: 20px;
 }
 
 .chart-box {
-  flex: 1 1 48%;
-  min-width: 350px;
   min-height: 600px;
 }
+
 
 .plotly, .ggplot {
   width: 100% !important;
@@ -113,3 +72,48 @@ table {
   border: none !important;
 }
 
+.gt_table, table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  background: #fff;
+  border-radius: 0; /* flat edges */
+  box-shadow: none; /* no drop shadow */
+  border: 1px solid #E5E7EB;
+}
+
+.gt_table th,
+.gt_table td,
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+thead, .gt_col_headings {
+  background-color: #EAF7FA !important; /* light teal header */
+  color: #27385A !important; /* navy text */
+  font-weight: 600;
+}
+
+tbody tr:nth-child(even),
+.gt_table tbody tr:nth-child(even) {
+  background-color: #F9FBFC;
+}
+
+tbody tr:hover,
+.gt_table tbody tr:hover {
+  background-color: #E3F4F7;
+}
+
+.gt_table th:first-child,
+.gt_table td:first-child {
+  border-top-left-radius: 0;
+}
+
+.gt_table th:last-child,
+.gt_table td:last-child {
+  border-top-right-radius: 0;
+}
