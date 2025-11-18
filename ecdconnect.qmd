@@ -15,7 +15,6 @@ ECD Connect plays a key role in this ecosystem - not only supporting practitione
 
 This report provides an initial snapshot of some of the data emerging from ECD Connect and explores how, as the datasets grow, they could contribute to broader insight and learning across the sector.
 
-<br>
 ---
 
 <br>
@@ -943,13 +942,119 @@ Additional thoughts in Education. As we get a larger user base, particularly for
 ---
 
 
-### Health
+### Health (CHW Connect)
 
-#### CHW Connect
+#### 1. Client Demographics
+_Demographics of all clients added since launch__
 
-##### Number of CHWs & Clients per Province (1 November 2024 to 20 November 2025)
+##### Child Gender Distribution
 
-``` {r province-clients, echo=FALSE}
+``` {r gg-children-gender, echo=FALSE }
+#| warning: false
+#| message: false
+
+conflicted::conflicts_prefer(plotly::layout)
+
+# Load data
+gender_data <- read_csv("~/Desktop/data/gg-gender.csv")
+
+# Prepare data
+gender_data <- gender_data %>%
+  arrange(desc(count)) %>%
+  mutate(
+    gender = factor(gender, levels = gender),
+    Percentage = round(count / sum(count) * 100, 1)
+  )
+
+# Create interactive pie
+plot_ly(
+  data = gender_data,
+  labels = ~gender,
+  values = ~count,
+  type = "pie",
+  sort = FALSE,
+  direction = "clockwise",
+  textinfo = "label+percent",
+  textposition = "auto",
+  hoverinfo = "text",
+  text = ~paste(gender, ": ", Percentage, "%"),
+  marker = list(
+    colors = c("#83BB26", "#1DBADF", "#FFD525"),
+    line = list(color = "white", width = 2)
+  )
+) %>%
+  layout(
+  showlegend = FALSE,
+  uniformtext = list(minsize = 12, mode = "hide"),
+  startangle = 90,
+  margin = list(l = 0, r = 0, t = 10, b = 0),
+  automargin = TRUE,
+  autosize = TRUE,
+  height = NULL,
+  width = NULL,
+  piecolorway = c("#83BB26", "#1DBADF", "#FFD525"),
+  annotations = list(),
+  # 👇 this is what enables the leader (connector) lines
+  showlegend = FALSE,
+  # Important connector line setting:
+  newshape = list(line = list(color = "grey", width = 1))
+) %>%
+  config(responsive = TRUE)
+
+
+```
+
+##### Birth Cohorts of Active Children
+
+```{r birth-cohorts, echo=FALSE }
+#| warning: false
+#| message: false
+
+# ---- Load your real data ----
+df <- read_csv("~/Desktop/data/gg-ages.csv")
+
+# Expecting columns:
+# birth_period   count
+
+# ---- ECD Connect colours ----
+ecd_cols <- c(
+  teal_blue = "#1DBADF",
+  pink = "#FF2180",
+  yellow = "#FFD525",
+  green = "#83BB26",
+  navy = "#27385A",
+  light_teal = "#8EDCEF",
+  light_pink = "#FF90BF"
+)
+
+# ---- Ordering: year desc, Jul–Dec above Jan–Jun ----
+df <- df %>%
+  mutate(
+    year = as.integer(str_sub(birth_period, -4)),
+    half = if_else(str_detect(birth_period, "Jul–Dec"), 2, 1),
+    birth_period = fct_reorder(birth_period, year*10 + half)
+  )
+
+# ---- Plot ----
+ggplot(df, aes(x = birth_period, y = count)) +
+  geom_col(fill = ecd_cols["teal_blue"]) +
+  geom_text(aes(label = count), vjust = -0.4, size = 3.2) +
+  scale_y_continuous(expand = expansion(mult = c(0, .15))) +
+  labs(
+    x = "",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", colour = ecd_cols["navy"]),
+    plot.subtitle = element_text(colour = ecd_cols["navy"]),
+    axis.text.x = element_text(angle = 45, hjust = 1, colour = ecd_cols["navy"]),
+    axis.title.y = element_text(colour = ecd_cols["navy"]),
+    panel.grid.minor = element_blank()
+  )
+```
+
+{r province-clients, echo=FALSE}
 #| warning: false
 #| message: false
 
@@ -1000,6 +1105,7 @@ ggplot(df_long, aes(x = Province, y = Value, fill = Metric)) +
 
 ```
 
+#### 2. Visits & Client Indicators
 ##### Visits Completed per Month (November 2024 to October 2025)
 
 ```{r gg-visits-bar, echo=FALSE}
@@ -1146,7 +1252,7 @@ ggplot(rates, aes(x = `Developmental Area`, y = followup_rate)) +
   theme_minimal(base_size = 15)
 ```
 
-#### Referrals (November 2024 to November 2025)
+##### Referrals (November 2024 to November 2025)
 _Referrals are automatically raised by the app during visits. After the visit, the CHW checks the referral box to indicate whether the referral to the clinic has been made_
 
 ::: {.stat-block}
@@ -1224,7 +1330,7 @@ child_df <- read_csv("~/Desktop/data/pregnant-referrals.csv") %>%
   mutate(
     Bar = purrr::map_chr(
       Total,
-      ~ paste(rep("▉", round(.x / max(child_df$Total) * 10)), collapse = "")
+      ~ paste(rep("▉", round(.x / max(child_df$Total) * 20)), collapse = "")
     )
   )
 
