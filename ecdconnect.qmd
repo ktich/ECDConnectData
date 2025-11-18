@@ -7,10 +7,24 @@ format: html
 # October 2025 Report
 Data report as of 31 October 2025
 
-## 1. Reach and Scale of ECD Connect
-ECD Connect has grown rapidly since launch, with adoption across both education and health. The figures below show our combined footprint, demonstrating early traction.
+## ECD Connect in the ECD Data Landscape
 
-This includes the ECD Connect App (open-access), all ECD Connect Partner versions (white-label) and Grow Great's CHW Connect. The numbers below represent all numbers since launch.
+South Africa’s ECD sector is moving towards a more integrated data system, with efforts underway to strengthen the DBE’s EMIS and align partner data contributions.
+
+ECD Connect plays a key role in this ecosystem - not only supporting practitioners and CHWs on the ground, but also generating rich data about early learning and health service delivery.
+
+This report provides an initial snapshot of some of the data emerging from ECD Connect and explores how, as the datasets grow, they could contribute to broader insight and learning across the sector.
+
+<br>
+---
+
+<br>
+
+## 1. Reach and Scale
+ECD Connect has grown rapidly across both education and health since launch. The figures below show our overall footprint to date, reflecting adoption across the open-access app, partner versions, and Grow Great’s CHW Connect.
+
+The totals represent cumulative numbers since each platform’s laun
+
 
 ::: {.stat-block}
 
@@ -31,7 +45,6 @@ This includes the ECD Connect App (open-access), all ECD Connect Partner version
 
 :::
 
-
 ```{r beneficiaries-map, echo=FALSE}
 #| message: false
 #| warning: false
@@ -51,6 +64,10 @@ library(readr)
 library(leaflet)
 library(plotly)
 library(gt)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(gtExtras)
 
 conflict_prefer("filter","dplyr")
 
@@ -232,14 +249,19 @@ ggplot(combined_map2) +
 
 ```
 
+Together, these numbers represent the growing network of practitioners, CHWs, and children engaging with the platform.
+
 ---
 
 <br>
 
-## 2. Versions
+## 2. Versions and Usage Patterns
+
+ECD Connect operates through several tailored versions, each designed for specific user groups. The sections below summarise usage and engagement across education and health.
+
 ### Education
 #### ECD Connect App
-_Since launch in April 2025 to October 2025_
+_An open-access version of the app - open to any principal/practitioner working in ECD in South Africa. Since launch in April 2025 to October 2025_
 
 ::: {.stat-block}
 
@@ -267,7 +289,7 @@ _Since launch in April 2025 to October 2025_
 
 
 #### ECD Connect Partner
-_Since launch in October 2024 to October 2025_
+_A customisable version for organisations who want to use a organisation-branded version of the app within their networks. We currently have versions for: Khululeka, Ntataise, and True North. Since pilot launch in October 2024 to October 2025_
 
 ::: {.stat-block}
 
@@ -329,7 +351,7 @@ _Since launch in April 2024 to October 2025_
 <br>
 
 ## 3. Emerging Insights
-
+_As use of the education app expands, richer patterns are emerging in the data being captured — from child demographics and attendance to preschool business trends. The visuals below provide early insight into how the platform reflects real-world programme participation and operations._
 
 ### Education
 
@@ -863,6 +885,57 @@ The classroom activities and resources sections of the app have generated a lot 
 
 :::
 
+##### Child Progress Tracking
+_lorem ipsum_
+
+::: {.stat-block}
+
+::: {.stat-card}
+<p class="stat-number">40</p>
+<p class="stat-label">preschools have used the child progress tracking tool</p>
+:::
+
+:::
+
+###### Child Developmental Outcomes by Subcategory
+
+```{r progress2, echo=FALSE}
+
+#| warning: false
+#| message: false
+
+# Read CSV
+data <- read_csv("~/Desktop/data/child-outcomes-developmental-areas.csv")
+
+# Convert to long format
+data_long <- pivot_longer(data,
+                          cols = c("Positive", "Negative", "Don't know"),
+                          names_to = "Response",
+                          values_to = "Count")
+
+# ECD Connect colours
+ecd_colours <- c("#1DBADF", "#FF2180", "#FFD525", "#83BB26", "#27385A", "#8EDCEF", "#FF90BF")
+
+# Assign colours to responses
+response_colours <- c("Positive" = "#83BB26",
+                      "Negative" = "#FF2180",
+                      "Don't know" = "#1DBADF")
+
+# Horizontal stacked bar chart
+ggplot(data_long, aes(y = SubcategoryName, x = Count, fill = Response)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = response_colours) +
+  labs(title = "Child Developmental Outcomes by Subcategory",
+       x = "Number of Skills",
+       y = "Developmental Subcategory",
+       fill = "Response") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 9),
+        legend.position = "bottom")
+
+
+```
+
 ---
 
 Additional thoughts in Education. As we get a larger user base, particularly for the ECD Connect App, we are also able to send out comms via WA and learn more about our users, etc. -- so e.g. the points competition form & results.
@@ -873,6 +946,59 @@ Additional thoughts in Education. As we get a larger user base, particularly for
 ### Health
 
 #### CHW Connect
+
+##### Number of CHWs & Clients per Province (1 November 2024 to 20 November 2025)
+
+``` {r province-clients, echo=FALSE}
+#| warning: false
+#| message: false
+
+df <- read_csv("~/Desktop/data/clients-by-province.csv")
+
+# Clean column names exactly as they appear in your CSV
+df_clean <- df %>%
+  rename(
+    Province = Province,
+    CHWs = CHWs,
+    "Pregnant clients" = `Pregnant Clients Added`,
+    "Child clients" = `Child Clients Added`
+  ) %>%
+  select(Province, CHWs, "Pregnant clients", "Child clients")
+
+# Pivot to long format
+df_long <- df_clean %>%
+  pivot_longer(
+    cols = c(CHWs, "Pregnant clients", "Child clients"),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = factor(Metric, levels = c("CHWs", "Pregnant clients", "Child clients")),
+    Value = ifelse(Value == 0, 0.01, Value)  # optional – prevents invisible bars
+  )
+
+# ECD Connect colours
+ecd_cols <- c(
+  "CHWs" = "#1DBADF",     # teal blue
+  "Pregnant clients" = "#FF2180", # bright pink
+  "Child clients" = "#FFD525"     # yellow
+)
+
+ggplot(df_long, aes(x = Province, y = Value, fill = Metric)) +
+  geom_col(position = position_dodge(width = 0.8)) +
+  scale_fill_manual(values = ecd_cols) +
+  labs(
+    y = "Count",
+    x = "Province",
+    fill = ""
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
+
+```
 
 ##### Visits Completed per Month (November 2024 to October 2025)
 
@@ -918,3 +1044,212 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
     legend.text = element_text(size = 10)
   )
 ```
+
+<br>
+
+##### Active CHWs and Average Visits per Month
+_DRAFT narrative: An active CHW is one who completed at least one visit in that month. Pilots were conducted in 4 provinces over the past 2 years. A pilot in one province ended and CHWs are no longer using the app. A pilot in another province ended in November, with CHWs being deactivated._
+
+```{r gg-visits-chws, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+
+data <- read_csv("~/Desktop/data/avg-visits-chws.csv")
+
+# Convert Month to date format if it's not already
+data <- data %>%
+  mutate(Month = as.Date(Month))
+
+# Prefer plotly's layout
+conflicted::conflicts_prefer(plotly::layout)
+
+# Create interactive line chart
+plot_ly(data) %>%
+  add_lines(
+    x = ~Month,
+    y = ~`Number of active CHWs`,
+    name = "Active CHWs",
+    line = list(color = "#1DBADF", width = 3)
+  ) %>%
+  add_lines(
+    x = ~Month,
+    y = ~`Avg number of visits per active CHW`,
+    name = "Avg Visits per CHW",
+    line = list(color = "#FF2180", width = 3, dash = "dot")
+  ) %>%
+  layout(
+    xaxis = list(title = "Month"),
+    yaxis = list(title = "Count / Average"),
+    legend = list(x = 0.05, y = 0.95)
+  )
+
+```
+
+
+##### Stunting Prevalance by Month
+_The Grow Great team is able to view stunting rates alongside the number of child visits completed; as well as filtered by province/district, etc. The graph below is showing stunting prevalence by month, across all areas._
+
+```{r stunting, echo=FALSE}
+
+#| warning: false
+#| message: false
+
+# Read CSV
+stunting <- read_csv("~/Desktop/data/stunting.csv")
+
+# Plot
+
+ggplot(stunting, aes(x = Month, y = `Stunting Prevalence %`)) +
+  geom_col(fill = "#1DBADF") +  # Teal blue
+  geom_text(aes(label = paste0(`Stunting Prevalence %`, "%")),
+            vjust = -0.3, size = 3.5, colour = "#27385A") +  # Navy text
+  labs(
+    x = NULL,
+    y = "Stunting Prevalence (%)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(colour = "#27385A", face = "bold"),
+    axis.text.x = element_text(colour = "#27385A"),
+    axis.text.y = element_text(colour = "#27385A"),
+    axis.title.y = element_text(colour = "#27385A"),
+    panel.grid.minor = element_blank()
+  )
+```
+
+##### Potential Developmental Concerns Identified
+_Percentage of screenings where milestone was not achieved_
+
+``` {r child-development, echo=FALSE}
+#| warning: false
+#| message: false
+
+df <- read_csv("~/Desktop/data/developmental-screening.csv")
+
+# compute follow-up rate
+rates <- df %>%
+  pivot_wider(names_from = Response, values_from = Count) %>%
+  mutate(
+    total = `On track` + `Needs follow-up`,
+    followup_rate = `Needs follow-up` / total
+  )
+
+ggplot(rates, aes(x = `Developmental Area`, y = followup_rate)) +
+  geom_col(fill = "#FF2180") +   # ECD Connect bright pink
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    x = NULL,
+    y = "Needs follow-up (%)"
+  ) +
+  theme_minimal(base_size = 15)
+```
+
+#### Referrals (November 2024 to November 2025)
+_Referrals are automatically raised by the app during visits. After the visit, the CHW checks the referral box to indicate whether the referral to the clinic has been made_
+
+::: {.stat-block}
+
+::: {.stat-card}
+<p class="stat-number">16,350</p>
+<p class="stat-label">referrals raised</p>
+:::
+
+::: {.stat-card}
+<p class="stat-number">6,681</p>
+<p class="stat-label">referrals raised</p>
+:::
+
+::: {.stat-card}
+<p class="stat-number">2,338</p>
+<p class="stat-label">back-referrals completed (feedback from the clinic)</p>
+:::
+
+:::
+
+
+
+``` {r referrals, echo=FALSE}
+#| warning: false
+#| message: false
+
+
+child_df_raw <- read_csv("~/Desktop/data/child-referrals.csv") %>%
+  rename(
+    Referral.type = `Referral type`,
+    Total = Total
+  )
+
+# compute the max *before* mutate
+max_total <- max(child_df_raw$Total, na.rm = TRUE)
+
+child_df <- child_df_raw %>%
+  mutate(
+    Bar = purrr::map_chr(
+      Total,
+      ~ paste(rep("▉", round(.x / max_total * 10)), collapse = "")
+    )
+  )
+
+gt(child_df) %>%
+  gt::text_transform(
+    locations = cells_body(columns = Bar),
+    fn = function(x) paste0("<span style='color:#1DBADF'>", x, "</span>")
+  ) %>%
+  tab_header(
+    title = "Top 5 Referral Reasons – Children",
+    subtitle = "Nov 2024 – Nov 2025"
+  ) %>%
+  cols_label(
+    Referral.type = "Referral reason",
+    Total = "Count",
+    Bar = "Visual scale"
+  ) %>%
+tab_options(table.width = pct(100)) %>%
+cols_width(Bar ~ px(120)) %>%
+tab_style(
+  style = cell_text(whitespace = "nowrap"),
+  locations = cells_column_labels(columns = Bar)
+)
+
+```
+
+``` {r referrals-pregnant, echo=FALSE}
+#| warning: false
+#| message: false
+
+child_df <- read_csv("~/Desktop/data/pregnant-referrals.csv") %>%
+  rename(Referral.type = `Referral type`, Total = Total) %>%
+  mutate(
+    Bar = purrr::map_chr(
+      Total,
+      ~ paste(rep("▉", round(.x / max(child_df$Total) * 10)), collapse = "")
+    )
+  )
+
+gt(child_df) %>%
+  gt::text_transform(
+    locations = cells_body(columns = Bar),
+    fn = function(x) paste0("<span style='color:#1DBADF'>", x, "</span>")
+  ) %>%
+  tab_header(
+    title = "Top 5 Referral Reasons – Pregnant Clients",
+    subtitle = "Nov 2024 – Nov 2025"
+  ) %>%
+  cols_label(
+    Referral.type = "Referral reason",
+    Total = "Count",
+    Bar = "Visual scale"
+  ) %>%
+tab_options(table.width = pct(100)) %>%
+cols_width(Bar ~ px(120)) %>%
+tab_style(
+  style = cell_text(whitespace = "nowrap"),
+  locations = cells_column_labels(columns = Bar)
+)
+
+```
+
+
+
