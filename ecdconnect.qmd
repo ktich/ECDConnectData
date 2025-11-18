@@ -14,6 +14,7 @@ South Africa’s ECD sector is moving towards a more integrated data system, wit
 ECD Connect plays a key role in this ecosystem - not only supporting practitioners and CHWs on the ground, but also generating rich data about early learning and health service delivery.
 
 This report provides an initial snapshot of some of the data emerging from ECD Connect and explores how, as the datasets grow, they could contribute to broader insight and learning across the sector.
+<br>
 
 ---
 
@@ -1054,7 +1055,9 @@ ggplot(df, aes(x = birth_period, y = count)) +
   )
 ```
 
-{r province-clients, echo=FALSE}
+
+##### Number of Clients Added per Province
+```{r province-clients, echo=FALSE}
 #| warning: false
 #| message: false
 
@@ -1105,6 +1108,7 @@ ggplot(df_long, aes(x = Province, y = Value, fill = Metric)) +
 
 ```
 
+
 #### 2. Visits & Client Indicators
 ##### Visits Completed per Month (November 2024 to October 2025)
 
@@ -1152,6 +1156,8 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 ```
 
 <br>
+
+
 
 ##### Active CHWs and Average Visits per Month
 _DRAFT narrative: An active CHW is one who completed at least one visit in that month. Pilots were conducted in 4 provinces over the past 2 years. A pilot in one province ended and CHWs are no longer using the app. A pilot in another province ended in November, with CHWs being deactivated._
