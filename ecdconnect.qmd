@@ -1,30 +1,30 @@
 ---
-title: "ECD Connect Data Report"
+title: "ECD Connect Data Report - November 2025"
 author: "Kim Tichmann"
 format: html
 ---
 
-# October 2025 Report
-Data report as of 31 October 2025
+**About the report:** this report (as of 20 November 2025) provides an overview of ECD Connect’s reach, usage, and key emerging data insights across both education and health. It highlights early patterns from our dashboards, recent progress in how we share data with partners, and how these trends support programme quality and sector-wide learning. This report is for internal use at DGMT only and should not be shared externally.
 
-## ECD Connect in the ECD Data Landscape
+***
 
-South Africa’s ECD sector is moving towards a more integrated data system, with efforts underway to strengthen the DBE’s EMIS and align partner data contributions.
+## ECD Connect Data Progress
 
-ECD Connect plays a key role in this ecosystem - not only supporting practitioners and CHWs on the ground, but also generating rich data about early learning and health service delivery.
+We have made strong progress in how we analyse and share data across both education and health. Partners now have clearer, actionable insights into uptake, delivery, and user behaviour.
 
-This report provides an initial snapshot of some of the data emerging from ECD Connect and explores how, as the datasets grow, they could contribute to broader insight and learning across the sector.
+- Dashboards now surface key patterns in retention, engagement, service delivery, and outcomes.
+- App improvements have been made directly in response to emerging data signals.
+- Data is increasingly linked to child outcomes, preschool delivery, referrals, and stunting.
+
+These developments reinforce ECD Connect’s core purpose: a user-centred system that also delivers the insight and accountability needed for scale. As usage grows, it positions the sector to integrate partner datasets (ECD Connect, Funda App, etc.) with larger systems, ultimately contributing to South Africa’s shift toward a more coherent and coordinated ECD data ecosystem.
+
 <br>
 
----
+***
 
-<br>
+## Overall Reach and Scale
 
-## 1. Reach and Scale
-ECD Connect has grown rapidly across both education and health since launch. The figures below show our overall footprint to date, reflecting adoption across the open-access app, partner versions, and Grow Great’s CHW Connect.
-
-The totals represent cumulative numbers since each platform’s laun
-
+ECD Connect has grown rapidly across both education and health since launch. The figures below show our overall footprint to date, reflecting adoption across ECD Connect App (open access), ECD Connect Partner (white label versions), and Grow Great’s CHW Connect.
 
 ::: {.stat-block}
 
@@ -34,21 +34,54 @@ The totals represent cumulative numbers since each platform’s laun
 :::
 
 ::: {.stat-card}
-<p class="stat-number">2,160</p>
+<p class="stat-number">2,455</p>
 <p class="stat-label">unique user sign-ups</p>
 :::
 
 ::: {.stat-card}
-<p class="stat-number">12,703</p>
-<p class="stat-label">total number of children added across all platforms</p>
+<p class="stat-number">12,831</p>
+<p class="stat-label">total number of children registered</p>
 :::
 
 :::
 
-```{r beneficiaries-map, echo=FALSE}
+***
+
+## CHW Connect (Grow Great Champions)
+
+::: {.stat-block}
+
+::: {.stat-card .gg-background}
+<p class="stat-number">342</p>
+<p class="stat-label">Community Health Workers</p>
+:::
+
+::: {.stat-card .gg-background}
+<p class="stat-number">60 808</p>
+<p class="stat-label">child visits <br>(Apr 2024-Nov 2025)</p>
+:::
+
+::: {.stat-card .gg-background}
+<p class="stat-number">6 503</p>
+<p class="stat-label">pregnant client visits <br>(Apr 2024-Nov 2025)</p>
+:::
+
+:::
+
+### User Retention
+
+- **79%** of CHWs who joined the app over 30 days ago have logged in again after 30 days.
+- **35%** of CHWs who signed up over 30 days ago have logged in within the past month.
+
+Pilots were conducted in 4 provinces over the past 2 years: Gauteng, Limpopo, Mpumalanga, and Western Cape. Pilots in Limpopo and Gauteng have ended and users will be deactivated in the near future.
+
+### Visits Completed per Month (November 2024 to November 2025)
+
+```{r gg-visits-bar, echo=FALSE}
 #| message: false
 #| warning: false
 #| paged-print: true
+#| out.width: 100%
 
 library(tidyverse)
 library(sf)
@@ -69,199 +102,88 @@ library(knitr)
 library(kableExtra)
 library(gtExtras)
 
-conflict_prefer("filter","dplyr")
+visits <- read_csv("~/Desktop/data/visits.csv")
 
-load("~/Desktop/data/sub_places.rda")  
-load("~/Desktop/data/postalcodes_geo.rda")
+# Order months chronologically
+visits$Month <- factor(visits$Month, levels = unique(visits$Month))
 
-df_children <- read.csv("~/Desktop/data/codes-ed.csv", stringsAsFactors = FALSE)
-df_clients  <- read.csv("~/Desktop/data/GG-location.csv", stringsAsFactors = FALSE)
-
-districts <- suppressMessages(suppressWarnings(st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE)))
-
-df_clients2 <- df_clients %>%
-  mutate(
-    District_clean = trimws(toupper(District))
-  )
-
-districts2 <- districts %>%
-  mutate(
-    DISTRICT_NAME_clean = trimws(toupper(DISTRICT_N))
-  )
-
-# Which CSV district names are in the map?
-matched <- df_clients2 %>%
-  filter(District_clean %in% districts2$DISTRICT_NAME_clean)
-invisible(nrow(matched))
-
-# ensure the district polygon column exists
-if (!"DISTRICT_NAME_clean" %in% names(districts2)) {
-  stop("Expected DISTRICT_NAME_clean in 'districts2' but not found.")
-}
-
-# Join the health data to the district polygons
-districts_health <- districts2 %>%
-  left_join(df_clients2, by = c("DISTRICT_NAME_clean" = "District_clean"))
-
-df_children2 <- df_children %>%
-  mutate(PostalCode = as.character(PostalCode),
-         TotalChildren = as.numeric(TotalChildren))
-
-postalcodes_geo2 <- postalcodes_geo %>%
-  mutate(PostalCode = as.character(code))
-
-# join lat/lon + totals
-pcs <- postalcodes_geo2 %>%
-  left_join(df_children2, by = "PostalCode") %>%
-  filter(!is.na(TotalChildren))
-
-# convert to spatial points
-pcs_sf <- st_as_sf(pcs, coords = c("lon", "lat"), crs = 4326, remove = FALSE)
-
-# align CRS + spatial join to districts
-pcs_sf <- st_transform(pcs_sf, st_crs(districts2))
-pcs_with_district <- st_join(pcs_sf, districts2 %>% select(DISTRICT_NAME_clean), join = st_within)
-
-# aggregate postal codes up to district
-districts_ed <- pcs_with_district %>%
-  st_set_geometry(NULL) %>%
-  group_by(DISTRICT_NAME_clean) %>%
-  summarise(TotalChildren = sum(TotalChildren, na.rm = TRUE)) %>%
-  right_join(districts2, by = "DISTRICT_NAME_clean") %>%
-  st_as_sf()
-
-# ---- COMBINE BOTH LAYERS ----
-health_for_map <- districts_health %>%
-  select(DISTRICT_NAME_clean, geometry, Value = TotalClients) %>%
-  mutate(Source = "Health")
-
-ed_for_map <- districts_ed %>%
-  select(DISTRICT_NAME_clean, geometry, Value = TotalChildren) %>%
-  mutate(Source = "Education")
-
-combined_map <- bind_rows(health_for_map, ed_for_map) %>%
-  group_by(DISTRICT_NAME_clean) %>%
-  summarise(
-    TotalBeneficiaries = sum(Value, na.rm = TRUE),
-    geometry = sf::st_union(geometry)
-  ) %>%
-  ungroup()
-
-# --- Merge with district polygons to ensure full geometry coverage ---
-combined_map <- districts2 %>%
-  left_join(
-    st_drop_geometry(combined_map),
-    by = "DISTRICT_NAME_clean"
-  )
-
-
-# --- Plot ---
-
-combined_map <- combined_map %>%
-  mutate(
-    BeneficiaryBand = case_when(
-      is.na(TotalBeneficiaries) ~ "0",
-      TotalBeneficiaries == 0 ~ "0",
-      TotalBeneficiaries <= 500 ~ "1–500",
-      TotalBeneficiaries <= 1000 ~ "501–1000",
-      TotalBeneficiaries <= 1500 ~ "1001–1500",
-      TotalBeneficiaries <= 2000 ~ "1501–2000",
-      TotalBeneficiaries <= 2500 ~ "2001–2500",
-      TotalBeneficiaries <= 3000 ~ "2501–3000",
-      TotalBeneficiaries <= 3500 ~ "3001–3500",
-      TotalBeneficiaries <= 4000 ~ "3501–4000",
-      TotalBeneficiaries > 4000 ~ "4000+"
-    ),
-    BeneficiaryBand = factor(
-      BeneficiaryBand,
-      levels = c("0", "1–500", "501–1000", "1001–1500", "1501–2000",
-                 "2001–2500", "2501–3000", "3001–3500", "3501–4000", "4000+")
-    )
-  )
-
-
-brand_palette <- c(
-  "0" = "#EFEFEF",        # light grey
-  "1–500" = "#D8EBF6",    # very light blue
-  "501–1000" = "#CBE9F4",
-  "1001–1500" = "#A4DBEF",
-  "1501–2000" = "#8EDCEF",
-  "2001–2500" = "#5CCAE2",
-  "2501–3000" = "#1DBADF",
-  "3001–3500" = "#1497BF",
-  "3501–4000" = "#52607B",
-  "4000+" = "#27385A"     # darkest brand blue
+# Ensure Visit Type order (bottom first)
+visits$`Visit Type` <- factor(
+  visits$`Visit Type`,
+  levels = c("Number of pregnant client visits", "Number of child visits")
 )
 
-# Create dummy rows for each BeneficiaryBand
-dummy_levels <- data.frame(
-  BeneficiaryBand = factor(
-    names(brand_palette),
-    levels = names(brand_palette)
-  )
-)
-
-# Create dummy geometries with the same CRS as your combined_map
-dummy_levels$geometry <- sf::st_sfc(
-  replicate(
-    length(brand_palette),
-    sf::st_point(c(0, 0)),
-    simplify = FALSE
-  ),
-  crs = sf::st_crs(combined_map)   # ensure same CRS
-)
-
-# Convert dummy_levels into an sf object
-dummy_levels <- sf::st_as_sf(dummy_levels)
-
-# Combine with your real map data
-combined_map2 <- dplyr::bind_rows(
-  combined_map %>% select(BeneficiaryBand, geometry),
-  dummy_levels
-)
-
-
-ggplot(combined_map2) +
-    geom_sf(aes(fill = BeneficiaryBand), colour = "#fff", size = 0.15) +
+# Stacked bar chart with reversed legend order
+ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
+  geom_bar(stat = "identity", colour = "white", width = 0.8) +
   scale_fill_manual(
-    values = brand_palette,
-    name = "Total beneficiaries",
-    drop = FALSE,
-    na.value = brand_palette["0"],
-    guide=guide_legend(
-      override.aes = list(fill = unname(brand_palette))
-    )
+    values = c(
+      "Number of pregnant client visits" = "#FF2180",  # pink (top)
+      "Number of child visits" = "#1DBADF"             # teal (bottom)
+    ),
+    breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
   ) +
-  coord_sf(xlim = st_bbox(combined_map)[c("xmin", "xmax")],
-         ylim = st_bbox(combined_map)[c("ymin", "ymax")],
-         expand = FALSE) +
   labs(
-    title = "Total Beneficiaries by District",
-    subtitle = "Combined Health and Education data",
-    caption = "‘Beneficiaries’ refers to children (education and health) \n and pregnant clients (health) registered in the app."
+    x = NULL,
+    y = "Visits Completed",
+    fill = NULL
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 12) +
   theme(
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold"),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.text = element_text(size = 10)
+  )
+```
+
+<br>
+
+#### Active CHWs and Average Visits per Month
+_Where "active CHW" = a user who has completed at least one visit in that month._
+
+```{r gg-visits-chws, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+
+data <- read_csv("~/Desktop/data/avg-visits-chws.csv")
+
+# Convert Month to date format if it's not already
+data <- data %>%
+  mutate(Month = as.Date(Month))
+
+# Prefer plotly's layout
+conflicted::conflicts_prefer(plotly::layout)
+
+# Create interactive line chart
+plot_ly(data) %>%
+  add_lines(
+    x = ~Month,
+    y = ~`Number of active CHWs`,
+    name = "Active CHWs",
+    line = list(color = "#1DBADF", width = 3)
+  ) %>%
+  add_lines(
+    x = ~Month,
+    y = ~`Avg number of visits per active CHW`,
+    name = "Avg Visits per CHW",
+    line = list(color = "#FF2180", width = 3, dash = "dot")
+  ) %>%
+  layout(
+    xaxis = list(title = "Month"),
+    yaxis = list(title = "Count / Average"),
+    legend = list(x = 0.05, y = 0.95)
   )
 
 ```
 
-Together, these numbers represent the growing network of practitioners, CHWs, and children engaging with the platform.
+***
 
----
-
-<br>
-
-## 2. Versions and Usage Patterns
-
-ECD Connect operates through several tailored versions, each designed for specific user groups. The sections below summarise usage and engagement across education and health.
-
-### Education
-#### ECD Connect App
-_An open-access version of the app - open to any principal/practitioner working in ECD in South Africa. Since launch in April 2025 to October 2025_
+## ECD Connect App (Open Access)
+_An open access version of the app - open to any principal/practitioner working in ECD in South Africa. Since launch in April 2025 to October 2025_
 
 ::: {.stat-block}
 
@@ -282,13 +204,44 @@ _An open-access version of the app - open to any principal/practitioner working 
 
 :::
 
-##### User Retention
-
+### User Retention
 - **17%** of users who joined the app over 30 days ago have logged in again after 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
 - **8%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
+### Attendance registers saved
+_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
 
-#### ECD Connect Partner
+```{r app-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
+
+df_appattendance <- read.csv("~/Desktop/data/app-attendance2.csv", stringsAsFactors = FALSE)
+
+df_appattendance <- df_appattendance %>%
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
+
+ggplot(df_appattendance, aes(x = MonthDate, y = registers)) +
+  geom_col(fill = "#83BB26") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+***
+
+## ECD Connect Partner
 _A customisable version for organisations who want to use a organisation-branded version of the app within their networks. We currently have versions for: Khululeka, Ntataise, and True North. Since pilot launch in October 2024 to October 2025_
 
 ::: {.stat-block}
@@ -310,54 +263,112 @@ _A customisable version for organisations who want to use a organisation-branded
 
 :::
 
-##### User Retention
-
+### User Retention
 - **26%** of users who joined the app over 30 days ago have logged in again after 30 days.
 - **12%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
-### Health
+### Attendance registers saved
+_[to be updated] We have seen increases in attendance tracking around partner organisation outreach efforts._
 
-#### CHW Connect
-_Since launch in April 2024 to October 2025_
+```{r partner-attendance-bar, echo=FALSE}
+#| message: false
+#| warning: false
+#| paged-print: true
+#| out.width: 100%
 
-::: {.stat-block}
+df_appattendance <- read.csv("~/Desktop/data/partner-attendance.csv", stringsAsFactors = FALSE)
 
-::: {.stat-card .gg-background}
-<p class="stat-number">342</p>
-<p class="stat-label">CHWs registered</p>
-:::
+df_appattendance <- df_appattendance %>%
+  mutate(
+    # Parse your "YYYY-MM" into a proper Date
+    MonthDate = ym(month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
+  )
 
-::: {.stat-card .gg-background}
-<p class="stat-number">60 202</p>
-<p class="stat-label">child visits completed</p>
-:::
+ggplot(df_appattendance, aes(x = MonthDate, y = registers)) +
+  geom_col(fill = "#FFD525") +
+  scale_x_date(
+  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
+  date_breaks = "1 month"
+) +
+  labs(
+    x = "Month",
+    y = "Number of registers saved"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
-::: {.stat-card .gg-background}
-<p class="stat-number">6 501</p>
-<p class="stat-label">pregnant client visits completed</p>
-:::
-
-:::
-
-##### User Retention
-
-- **79%** of CHWs who joined the app over 30 days ago have logged in again after 30 days.
-- **35%** of CHWs who signed up over 30 days ago have logged in within the past month.
 
 <br>
-
----
-
+<br>
+<br>
 <br>
 
-## 3. Emerging Insights
+***
+
+::: {.callout-note collapse="true"}
+
+# Appendix 1 - How ECD Connect Partner Organisations View App Data
+
+## Grafana Dashboards
+
+Each partner organisation has access to three Grafana dashboards where they can see live data from their version of the app.
+
+### Usage dashboard
+For user support team members. It allows team members to monitor usage and quickly help users when needed.
+
+```{r}
+#| echo: false
+#| fig-cap: "Image of usage dashboard, showing test environment data."
+knitr::include_graphics("images/usage.png")
+```
+
+### Outcomes dashboard
+Shows outcomes in six categories: Access & Participation, Child Demographics, Teaching & Learning Quality, Child Development & Progress, Practitioner Capacity & Support, Business/Finances. This dashboard will be adapted and expanded in collaboration with partner organisations.
+
+```{r}
+#| echo: false
+#| fig-cap: "Image of outcomes dashboard, showing test environment data."
+knitr::include_graphics("images/outcomes.png")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Teaching and learning section - showing test environment data."
+knitr::include_graphics("images/outcomes-teaching.png")
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Child development section - showing test environment data."
+knitr::include_graphics("images/outcomes-progress.png")
+```
+
+### Preschools dashboard
+Shows preschool-level information and allows organisations to identify and respond to preschool-level issues. Organisations can filter to view a specific preschool
+
+```{r}
+#| echo: false
+
+#| fig-cap: "Image of preschools dashboard, showing test environment data."
+knitr::include_graphics("images/preschools.png")
+
+```
+
+***
+:::
+
+::: {.callout-note collapse="true"}
+
+# Appendix 2 - Emerging Insights
+
+## Education
 _As use of the education app expands, richer patterns are emerging in the data being captured — from child demographics and attendance to preschool business trends. The visuals below provide early insight into how the platform reflects real-world programme participation and operations._
 
-### Education
+### 1. Child demographics
 
-#### 1. Child Demographics
-
-##### Geographic Spread of Registered Children
+#### Geographic Spread of Registered Children
 
 ```{r ed-children-map, echo=FALSE}
 #| message: false
@@ -368,26 +379,30 @@ _As use of the education app expands, richer patterns are emerging in the data b
 districts <- st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
   st_transform(4326)
 
-# --- Load CSV ---
+# --- Load required CSVs + spatial data (previously loaded in chunk 1) ---
 codes <- read_csv("~/Desktop/data/codes-ed.csv")
+load("~/Desktop/data/postalcodes_geo.rda")   # <-- this restores `postalcodes_geo`
 
-# --- Merge with postal code coordinates ---
-codes_geo <- codes |>
-  left_join(postalcodes_geo, by = c("PostalCode" = "code")) |>
+# --- Prepare postal code coordinates ---
+codes_geo <- codes %>%
+  mutate(PostalCode = as.character(PostalCode)) %>%
+  left_join(
+    postalcodes_geo %>%
+      mutate(code = as.character(code)),
+    by = c("PostalCode" = "code")
+  ) %>%
   drop_na(lat, lon)
 
 # --- Convert to spatial points ---
 codes_sf <- st_as_sf(codes_geo, coords = c("lon", "lat"), crs = 4326)
 
-# --- Create ggplot (static) ---
+# --- Static ggplot (keeping for completeness) ---
 p <- ggplot() +
   geom_sf(data = districts, fill = "grey95", colour = "grey70", linewidth = 0.3) +
   geom_sf(
     data = codes_sf,
-    aes(size = TotalChildren,
-        text = paste0("Postal code: ", PostalCode,
-                      "<br>Total children: ", TotalChildren)),
-    colour = "#0072B2", alpha = 0.6
+    aes(size = TotalChildren),
+    colour = "#1DBADF", alpha = 0.6
   ) +
   scale_size_continuous(range = c(1, 10)) +
   coord_sf(datum = NA) +
@@ -399,23 +414,26 @@ p <- ggplot() +
   labs(title = "Total Children by Postal Code") +
   guides(size = "none")
 
-# --- Make interactive map ---
-leaflet() |>
-  addProviderTiles("CartoDB.Positron") |>
+# --- Interactive leaflet map ---
+leaflet() %>%
+  addProviderTiles("CartoDB.Positron") %>%
   addPolygons(
     data = districts,
     color = "#666", weight = 1, fillOpacity = 0.1
-  ) |>
+  ) %>%
   addCircleMarkers(
     data = codes_sf,
     radius = ~scales::rescale(TotalChildren, to = c(2, 12)),
     color = "#1DBADF", fillOpacity = 0.8, stroke = FALSE,
-    popup = ~paste0("Total children: ", TotalChildren)
-  ) |>
-  setView(lng = 25, lat = -29, zoom = 5) |>
+    popup = ~paste0(
+      "Postal code: ", PostalCode, "<br>",
+      "Total children: ", TotalChildren
+    )
+  ) %>%
+  setView(lng = 25, lat = -29, zoom = 5) %>%
   setMaxBounds(
-    lng1 = 16, lat1 = -35,   # Southwest corner (approx)
-    lng2 = 33, lat2 = -22    # Northeast corner (approx)
+    lng1 = 16, lat1 = -35,
+    lng2 = 33, lat2 = -22
   )
 
 ```
@@ -423,12 +441,7 @@ leaflet() |>
 <br>
 
 
-
-<div class="chart-row">
-
-<div class="chart-box">
-
-##### Child Gender Distribution
+#### Child Gender Distribution
 
 ``` {r ed-children-gender, echo=FALSE }
 #| warning: false
@@ -484,10 +497,8 @@ plot_ly(
 
 
 ```
-</div>
 
-<div class="chart-box">
-##### Child Age Distribution
+#### Child Age Distribution
 
 ``` {r ed-children-ages, echo=FALSE, fig.height = 8 }
 #| warning: false
@@ -511,10 +522,7 @@ axis.text.x = element_text(angle = 30, hjust = 1)
 
 <br>
 
-
-</div></div>
-
-##### Family Grant Types
+#### Family Grant Types
 
 ```{r grants-ed, echo=FALSE}
 #| warning: false
@@ -542,42 +550,12 @@ ggplot(grants, aes(x = fct_reorder(type, number_of_children),
 
 <br>
 
-#### 2. Access & Participation
 
-##### Attendance registers saved
-_As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
-
-```{r app-attendance-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
-
-df_appattendance <- read.csv("~/Desktop/data/app-attendance.csv", stringsAsFactors = FALSE)
-
-df_appattendance <- df_appattendance %>%
-  mutate(
-    # Parse your "YYYY-MM" into a proper Date
-    MonthDate = ym(Month)  # lubridate::ym() interprets "2025-04" as 2025-Apr-01
-  )
-
-ggplot(df_appattendance, aes(x = MonthDate, y = Registers.Saved)) +
-  geom_col(fill = "#FF2180") +
-  scale_x_date(
-  date_labels = "%b %Y",   # 👈 shows "Apr 2025" instead of "April 2025"
-  date_breaks = "1 month"
-) +
-  labs(
-    x = "Month",
-    y = "Number of registers saved"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
+### 2. Access & Participation
 
 <br>
 
-##### Average Child Attendance by Month
+#### Average Child Attendance by Month
 
 ```{r child-attendance, echo=FALSE}
 #| warning: false
@@ -608,9 +586,9 @@ ggplot(attendance, aes(x = reorder(Month, month_start),
 
 <br>
 
-#### 3. Business & Finance
+### 3. Business & Finance
 
-##### Spread of preschool balances (1 August to 31 October 2025)
+#### Spread of preschool balances (1 August to 31 October 2025)
 _Balance is income minus expenses_
 
 ```{r balances-table, echo=FALSE}
@@ -689,7 +667,7 @@ ggplot(balances_clean, aes(x = balance)) +
 
 <br>
 
-##### Income and Expense Categories
+#### Income and Expense Categories
 _Percentage breakdown of income and expense categories during the selected period. Each pie shows the share of total income or total expenses contributed by each category._
 
 ::: {style="width:100%"}
@@ -801,9 +779,9 @@ combined
 
 <br>
 
-##### DBE Subsidy
+#### DBE Subsidy
 
-##### Preschools Recording DBE Subsidies
+#### Preschools Recording DBE Subsidies
 _Among those who logged income and expenses._
 
 ::: {.stat-block}
@@ -842,7 +820,7 @@ _Among those who logged income and expenses._
 
 <br>
 
-##### Preschool Fees
+#### Preschool Fees
 _Preschool fee information, based on the 49 preschools which have added income/expenses to the app._
 
 ::: {.stat-block}
@@ -866,9 +844,9 @@ _Preschool fee information, based on the 49 preschools which have added income/e
 
 <br>
 
-#### 4. Teaching & Learning
+### 4. Teaching & Learning
 
-##### Lesson planning
+#### Lesson planning
 The classroom activities and resources sections of the app have generated a lot of interest.
 
 ::: {.stat-block}
@@ -885,7 +863,7 @@ The classroom activities and resources sections of the app have generated a lot 
 
 :::
 
-##### Child Progress Tracking
+#### Child Progress Tracking
 _lorem ipsum_
 
 ::: {.stat-block}
@@ -897,7 +875,7 @@ _lorem ipsum_
 
 :::
 
-###### Child Developmental Outcomes by Subcategory
+#### Child Developmental Outcomes by Subcategory
 
 ```{r progress2, echo=FALSE}
 
@@ -943,13 +921,64 @@ Additional thoughts in Education. As we get a larger user base, particularly for
 ---
 
 
-### Health (CHW Connect)
+## Health (CHW Connect)
 
-#### 1. Client Demographics
-_Demographics of all clients added since launch__
+### 1. Client Demographics
+_Demographics of all clients added since launch_
 
-##### Child Gender Distribution
+#### Number of Clients Added per Province
+```{r province-clients, echo=FALSE}
+#| warning: false
+#| message: false
 
+df <- read_csv("~/Desktop/data/clients-by-province.csv")
+
+# Clean column names exactly as they appear in your CSV
+df_clean <- df %>%
+  rename(
+    Province = Province,
+    CHWs = CHWs,
+    "Pregnant clients" = `Pregnant Clients Added`,
+    "Child clients" = `Child Clients Added`
+  ) %>%
+  select(Province, CHWs, "Pregnant clients", "Child clients")
+
+# Pivot to long format
+df_long <- df_clean %>%
+  pivot_longer(
+    cols = c(CHWs, "Pregnant clients", "Child clients"),
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Metric = factor(Metric, levels = c("CHWs", "Pregnant clients", "Child clients")),
+    Value = ifelse(Value == 0, 0.01, Value)  # optional – prevents invisible bars
+  )
+
+# ECD Connect colours
+ecd_cols <- c(
+  "CHWs" = "#1DBADF",     # teal blue
+  "Pregnant clients" = "#FF2180", # bright pink
+  "Child clients" = "#FFD525"     # yellow
+)
+
+ggplot(df_long, aes(x = Province, y = Value, fill = Metric)) +
+  geom_col(position = position_dodge(width = 0.8)) +
+  scale_fill_manual(values = ecd_cols) +
+  labs(
+    y = "Count",
+    x = "Province",
+    fill = ""
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
+
+```
+
+#### Child Gender Distribution
 ``` {r gg-children-gender, echo=FALSE }
 #| warning: false
 #| message: false
@@ -1005,8 +1034,7 @@ plot_ly(
 
 ```
 
-##### Birth Cohorts of Active Children
-
+#### Birth Cohorts of Active Children
 ```{r birth-cohorts, echo=FALSE }
 #| warning: false
 #| message: false
@@ -1056,150 +1084,7 @@ ggplot(df, aes(x = birth_period, y = count)) +
 ```
 
 
-##### Number of Clients Added per Province
-```{r province-clients, echo=FALSE}
-#| warning: false
-#| message: false
-
-df <- read_csv("~/Desktop/data/clients-by-province.csv")
-
-# Clean column names exactly as they appear in your CSV
-df_clean <- df %>%
-  rename(
-    Province = Province,
-    CHWs = CHWs,
-    "Pregnant clients" = `Pregnant Clients Added`,
-    "Child clients" = `Child Clients Added`
-  ) %>%
-  select(Province, CHWs, "Pregnant clients", "Child clients")
-
-# Pivot to long format
-df_long <- df_clean %>%
-  pivot_longer(
-    cols = c(CHWs, "Pregnant clients", "Child clients"),
-    names_to = "Metric",
-    values_to = "Value"
-  ) %>%
-  mutate(
-    Metric = factor(Metric, levels = c("CHWs", "Pregnant clients", "Child clients")),
-    Value = ifelse(Value == 0, 0.01, Value)  # optional – prevents invisible bars
-  )
-
-# ECD Connect colours
-ecd_cols <- c(
-  "CHWs" = "#1DBADF",     # teal blue
-  "Pregnant clients" = "#FF2180", # bright pink
-  "Child clients" = "#FFD525"     # yellow
-)
-
-ggplot(df_long, aes(x = Province, y = Value, fill = Metric)) +
-  geom_col(position = position_dodge(width = 0.8)) +
-  scale_fill_manual(values = ecd_cols) +
-  labs(
-    y = "Count",
-    x = "Province",
-    fill = ""
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 30, hjust = 1)
-  )
-
-```
-
-
-#### 2. Visits & Client Indicators
-##### Visits Completed per Month (November 2024 to October 2025)
-
-```{r gg-visits-bar, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-#| out.width: 100%
-
-visits <- read_csv("~/Desktop/data/visits.csv")
-
-# Order months chronologically
-visits$Month <- factor(visits$Month, levels = unique(visits$Month))
-
-# Ensure Visit Type order (bottom first)
-visits$`Visit Type` <- factor(
-  visits$`Visit Type`,
-  levels = c("Number of pregnant client visits", "Number of child visits")
-)
-
-# Stacked bar chart with reversed legend order
-ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
-  geom_bar(stat = "identity", colour = "white", width = 0.8) +
-  scale_fill_manual(
-    values = c(
-      "Number of pregnant client visits" = "#FF2180",  # pink (top)
-      "Number of child visits" = "#1DBADF"             # teal (bottom)
-    ),
-    breaks = c("Number of child visits", "Number of pregnant client visits") # ensures correct legend order
-  ) +
-  labs(
-    x = NULL,
-    y = "Visits Completed",
-    fill = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.minor = element_blank(),
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(face = "bold"),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.text = element_text(size = 10)
-  )
-```
-
-<br>
-
-
-
-##### Active CHWs and Average Visits per Month
-_DRAFT narrative: An active CHW is one who completed at least one visit in that month. Pilots were conducted in 4 provinces over the past 2 years. A pilot in one province ended and CHWs are no longer using the app. A pilot in another province ended in November, with CHWs being deactivated._
-
-```{r gg-visits-chws, echo=FALSE}
-#| message: false
-#| warning: false
-#| paged-print: true
-
-data <- read_csv("~/Desktop/data/avg-visits-chws.csv")
-
-# Convert Month to date format if it's not already
-data <- data %>%
-  mutate(Month = as.Date(Month))
-
-# Prefer plotly's layout
-conflicted::conflicts_prefer(plotly::layout)
-
-# Create interactive line chart
-plot_ly(data) %>%
-  add_lines(
-    x = ~Month,
-    y = ~`Number of active CHWs`,
-    name = "Active CHWs",
-    line = list(color = "#1DBADF", width = 3)
-  ) %>%
-  add_lines(
-    x = ~Month,
-    y = ~`Avg number of visits per active CHW`,
-    name = "Avg Visits per CHW",
-    line = list(color = "#FF2180", width = 3, dash = "dot")
-  ) %>%
-  layout(
-    xaxis = list(title = "Month"),
-    yaxis = list(title = "Count / Average"),
-    legend = list(x = 0.05, y = 0.95)
-  )
-
-```
-
-
-##### Stunting Prevalance by Month
+#### Stunting Prevalance by Month
 _The Grow Great team is able to view stunting rates alongside the number of child visits completed; as well as filtered by province/district, etc. The graph below is showing stunting prevalence by month, across all areas._
 
 ```{r stunting, echo=FALSE}
@@ -1230,7 +1115,7 @@ ggplot(stunting, aes(x = Month, y = `Stunting Prevalence %`)) +
   )
 ```
 
-##### Potential Developmental Concerns Identified
+#### Potential Developmental Concerns Identified
 _Percentage of screenings where milestone was not achieved_
 
 ``` {r child-development, echo=FALSE}
@@ -1258,7 +1143,7 @@ ggplot(rates, aes(x = `Developmental Area`, y = followup_rate)) +
   theme_minimal(base_size = 15)
 ```
 
-##### Referrals (November 2024 to November 2025)
+#### Referrals (November 2024 to November 2025)
 _Referrals are automatically raised by the app during visits. After the visit, the CHW checks the referral box to indicate whether the referral to the clinic has been made_
 
 ::: {.stat-block}
@@ -1365,3 +1250,8 @@ tab_style(
 
 
 
+
+
+:::
+
+<button onclick="window.print()">Download PDF</button>
