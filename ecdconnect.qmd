@@ -148,35 +148,67 @@ _Where "active CHW" = a user who has completed at least one visit in that month.
 #| message: false
 #| warning: false
 #| paged-print: true
+#| out-width: "100%"
 
 data <- read_csv("~/Desktop/data/avg-visits-chws.csv")
 
-# Convert Month to date format if it's not already
+# Convert Month to date format
 data <- data %>%
   mutate(Month = as.Date(Month))
 
-# Prefer plotly's layout
-conflicted::conflicts_prefer(plotly::layout)
-
-# Create interactive line chart
-plot_ly(data) %>%
-  add_lines(
-    x = ~Month,
-    y = ~`Number of active CHWs`,
-    name = "Active CHWs",
-    line = list(color = "#1DBADF", width = 3)
-  ) %>%
-  add_lines(
-    x = ~Month,
-    y = ~`Avg number of visits per active CHW`,
-    name = "Avg Visits per CHW",
-    line = list(color = "#FF2180", width = 3, dash = "dot")
-  ) %>%
-  layout(
-    xaxis = list(title = "Month"),
-    yaxis = list(title = "Count / Average"),
-    legend = list(x = 0.05, y = 0.95)
-  )
+# Plot
+ggplot(data, aes(x = Month)) +
+geom_line(
+aes(y = `Number of active CHWs`,
+colour = "Active CHWs",
+linetype = "Active CHWs"),
+linewidth = 1.2
+) +
+geom_line(
+aes(y = `Avg number of visits per active CHW`,
+colour = "Avg Number of Visits per CHW",
+linetype = "Avg Number of Visits per CHW"),
+linewidth = 1.2
+) +
+scale_colour_manual(
+name = NULL,
+values = c(
+"Active CHWs" = "#1DBADF",
+"Avg Number of Visits per CHW" = "#FF2180"
+)
+) +
+scale_linetype_manual(
+name = NULL,
+values = c(
+"Active CHWs" = "solid",
+"Avg Number of Visits per CHW" = "11"
+)
+) +
+labs(
+x = "Month",
+y = "Count / Average"
+) +
+theme_minimal(base_size = 12) +
+theme(
+panel.grid.minor = element_blank(),
+legend.position = "right"
+) +
+scale_y_continuous(
+  breaks = pretty,
+  expand = expansion(mult = c(0, 0.3))) +
+labs(
+x = "Month",
+y = "Count / Average"
+) +
+theme_minimal(base_size = 12) +
+theme(
+panel.grid.minor = element_blank(),
+legend.position = c(0.05, 0.95), # top-left inside plot
+legend.justification = c("left", "top"),
+legend.background = element_rect(fill = alpha("white", 0.7),
+colour = NA),
+legend.key = element_blank()
+)
 
 ```
 
@@ -355,9 +387,9 @@ Shows preschool-level information and allows organisations to identify and respo
 knitr::include_graphics("images/preschools.png")
 
 ```
+:::
 
 ***
-:::
 
 ::: {.callout-note collapse="true"}
 
