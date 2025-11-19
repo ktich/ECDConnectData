@@ -470,9 +470,6 @@ leaflet() %>%
 
 ```
 
-<br>
-
-
 #### Child Gender Distribution
 
 ``` {r ed-children-gender, echo=FALSE }
@@ -551,8 +548,6 @@ plot.title = element_text(face = "bold", hjust = 0.5),
 axis.text.x = element_text(angle = 30, hjust = 1)
 )
 ```
-
-<br>
 
 #### Family Grant Types
 
