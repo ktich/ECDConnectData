@@ -4,17 +4,17 @@ author: "Kim Tichmann"
 format: html
 ---
 
-**About the report:** this report (as of 20 November 2025) provides an overview of ECD Connect’s reach, usage, and key emerging data insights across both education and health. It highlights early patterns from our dashboards, recent progress in how we share data with partners, and how these trends support programme quality and sector-wide learning. This report is for internal use at DGMT only and should not be shared externally.
+**About the report:** This report (as of 20 November 2025) provides an overview of ECD Connect’s reach, usage, and early data trends across both education and health. It summarises emerging insights from our dashboards, recent advances in how we share data with partners, and how these patterns are beginning to support programme quality and sector learning.  
 
 ***
 
 ## ECD Connect Data Progress
 
-We have made strong progress in how we analyse and share data across both education and health. Partners now have clearer, actionable insights into uptake, delivery, and user behaviour.
+We have made strong progress in how we analyse and share data across both education and health. Partners now receive clearer, more actionable insight into uptake, delivery, and user behaviour.
 
-- Dashboards now surface key patterns in retention, engagement, service delivery, and outcomes.
-- App improvements have been made directly in response to emerging data signals.
-- Data is increasingly linked to child outcomes, preschool delivery, referrals, and stunting.
+- Dashboards highlight key patterns in retention, engagement, service delivery, and outcomes.
+- App improvements have been made directly in response to emerging data signals and user behaviour.
+- Data now surfaces outcomes at child, preschool, and clinic level, helping partners see emerging patterns across their networks.
 
 These developments reinforce ECD Connect’s core purpose: a user-centred system that also delivers the insight and accountability needed for scale. As usage grows, it positions the sector to integrate partner datasets (ECD Connect, Funda App, etc.) with larger systems, ultimately contributing to South Africa’s shift toward a more coherent and coordinated ECD data ecosystem.
 
@@ -40,7 +40,7 @@ ECD Connect has grown rapidly across both education and health since launch. The
 
 ::: {.stat-card}
 <p class="stat-number">12,831</p>
-<p class="stat-label">total number of children registered</p>
+<p class="stat-label">children registered</p>
 :::
 
 :::
@@ -73,7 +73,7 @@ ECD Connect has grown rapidly across both education and health since launch. The
 - **79%** of CHWs who joined the app over 30 days ago have logged in again after 30 days.
 - **35%** of CHWs who signed up over 30 days ago have logged in within the past month.
 
-Pilots were conducted in 4 provinces over the past 2 years: Gauteng, Limpopo, Mpumalanga, and Western Cape. Pilots in Limpopo and Gauteng have ended and users will be deactivated in the near future.
+Pilots were conducted across four provinces (Gauteng, Limpopo, Mpumalanga, Western Cape). Pilots in Gauteng and Limpopo have ended and users will be deactivated in the coming months.
 
 ### Visits Completed per Month (November 2024 to November 2025)
 
@@ -142,7 +142,7 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 <br>
 
 #### Active CHWs and Average Visits per Month
-_Where "active CHW" = a user who has completed at least one visit in that month._
+_An **active CHW** is a user who completed at least one visit that month._
 
 ```{r gg-visits-chws, echo=FALSE}
 #| message: false
@@ -300,7 +300,7 @@ _A customisable version for organisations who want to use a organisation-branded
 - **12%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 ### Attendance registers saved
-_[to be updated] We have seen increases in attendance tracking around partner organisation outreach efforts._
+_We have seen increases in attendance tracking around partner organisation outreach efforts._
 
 ```{r partner-attendance-bar, echo=FALSE}
 #| message: false
