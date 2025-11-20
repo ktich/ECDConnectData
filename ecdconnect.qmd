@@ -4,20 +4,19 @@ author: "Kim Tichmann"
 format: html
 ---
 
-**About the report:** This report (as of 20 November 2025) provides an overview of ECD Connect’s reach, usage, and early data trends across both education and health. It summarises emerging insights from our dashboards, recent advances in how we share data with partners, and how these patterns are beginning to support programme quality and sector learning.  
+**About the report:** This report (as of 20 November 2025) provides a snapshot of ECD Connect’s reach, usage, and emerging data trends. It highlights key dashboard insights, recent advances in partner data-sharing, and early indications of how this information is beginning to support programme quality and sector learning.
 
 ***
 
 ## ECD Connect Data Progress
 
-We have made strong progress in how we analyse and share data across both education and health. Partners now receive clearer, more actionable insight into uptake, delivery, and user behaviour.
+We have made strong progress in how we analyse and share data across education and health, giving partners clearer, more actionable insight into uptake, delivery, and user behaviour.
 
 - Dashboards highlight key patterns in retention, engagement, service delivery, and outcomes.
-- App improvements have been made directly in response to emerging data signals and user behaviour.
-- Data now surfaces outcomes at child, preschool, and clinic level, helping partners see emerging patterns across their networks.
+We have made app improvements in direct response to emerging data signals and user behaviour.
+- Data now highlights outcomes at child, preschool, and clinic level, helping partners see emerging patterns across their networks.
 
-These developments reinforce ECD Connect’s core purpose: a user-centred system that also delivers the insight and accountability needed for scale. As usage grows, it positions the sector to integrate partner datasets (ECD Connect, Funda App, etc.) with larger systems, ultimately contributing to South Africa’s shift toward a more coherent and coordinated ECD data ecosystem.
-
+These advances strengthen ECD Connect’s core purpose: a user-centred system that also delivers the insight needed for effective scale. As usage grows, it positions the sector to connect partner datasets (including ECD Connect and Funda App) with larger systems and contribute to a more coherent national ECD data ecosystem.
 <br>
 
 ***
@@ -39,7 +38,7 @@ ECD Connect has grown rapidly across both education and health since launch. The
 :::
 
 ::: {.stat-card}
-<p class="stat-number">12,831</p>
+<p class="stat-number">12,836</p>
 <p class="stat-label">children registered</p>
 :::
 
@@ -71,11 +70,10 @@ ECD Connect has grown rapidly across both education and health since launch. The
 ### User Retention
 
 - **79%** of CHWs who joined the app over 30 days ago have logged in again after 30 days.
-- **35%** of CHWs who signed up over 30 days ago have logged in within the past month.
+- **30%** of CHWs who signed up over 30 days ago have logged in within the past month.
 
-Pilots were conducted across four provinces (Gauteng, Limpopo, Mpumalanga, Western Cape). Pilots in Gauteng and Limpopo have ended and users will be deactivated in the coming months.
-
-### Visits Completed per Month (November 2024 to November 2025)
+### Visits Completed per Month (Nov 2024 to Nov 2025)
+_The peaks in activity reflect periods when pilots were active; the later decline follows the pilots ending in Gauteng and Limpopo._
 
 ```{r gg-visits-bar, echo=FALSE}
 #| message: false
@@ -141,7 +139,7 @@ ggplot(visits, aes(x = Month, y = `Visits Completed`, fill = `Visit Type`)) +
 
 <br>
 
-#### Active CHWs and Average Visits per Month
+#### Active CHWs and Average Visits per Month (Nov 2024 to Nov 2025)
 _An **active CHW** is a user who completed at least one visit that month._
 
 ```{r gg-visits-chws, echo=FALSE}
@@ -215,30 +213,30 @@ legend.key = element_blank()
 ***
 
 ## ECD Connect App (Open Access)
-_An open access version of the app - open to any principal/practitioner working in ECD in South Africa. Since launch in April 2025 to October 2025_
+_A version of the app that is open to any principal/practitioner working in ECD in South Africa. Since launch in April 2025 to November 2025_
 
 ::: {.stat-block}
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,605</p>
+<p class="stat-number">1,902</p>
 <p class="stat-label">unique sign-ups</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">537</p>
+<p class="stat-number">608</p>
 <p class="stat-label">preschools added</p>
 :::
 
 ::: {.stat-card .app-background}
-<p class="stat-number">1,637</p>
+<p class="stat-number">1,667</p>
 <p class="stat-label">children registered</p>
 :::
 
 :::
 
 ### User Retention
-- **17%** of users who joined the app over 30 days ago have logged in again after 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
-- **8%** of practitioners who signed up over 30 days ago have logged in within the past month.
+- **16%** of users who joined the app over 30 days ago have logged in again after 30 days. This is higher than the standard [global app retention rate of 7% by day 30](https://www.adjust.com/resources/guides/user-retention/).
+- **9%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 ### Attendance registers saved
 _As we roll out to more users, we are seeing an increase in the number of attendance registers saved per month._
@@ -273,8 +271,8 @@ ggplot(df_appattendance, aes(x = MonthDate, y = registers)) +
 
 ***
 
-## ECD Connect Partner
-_A customisable version for organisations who want to use a organisation-branded version of the app within their networks. We currently have versions for: Khululeka, Ntataise, and True North. Since pilot launch in October 2024 to October 2025_
+## ECD Connect Partner (White Label)
+_A customisable version for organisations who want to use an organisation-branded version of the app within their networks. We currently have versions for: Khululeka, Ntataise, and True North. Since launch in October 2024 to November 2025._
 
 ::: {.stat-block}
 
@@ -297,10 +295,10 @@ _A customisable version for organisations who want to use a organisation-branded
 
 ### User Retention
 - **26%** of users who joined the app over 30 days ago have logged in again after 30 days.
-- **12%** of practitioners who signed up over 30 days ago have logged in within the past month.
+- **13%** of practitioners who signed up over 30 days ago have logged in within the past month.
 
 ### Attendance registers saved
-_We have seen increases in attendance tracking around partner organisation outreach efforts._
+_Spikes in attendance tracking align with partner outreach periods, reflecting stronger engagement during those months._
 
 ```{r partner-attendance-bar, echo=FALSE}
 #| message: false
@@ -342,7 +340,7 @@ ggplot(df_appattendance, aes(x = MonthDate, y = registers)) +
 
 # Appendix 1 - How ECD Connect Partner Organisations View App Data
 
-## Grafana Dashboards
+## ECD Connect Partner - Grafana Dashboards
 
 Each partner organisation has access to three Grafana dashboards where they can see live data from their version of the app.
 
@@ -382,21 +380,18 @@ Shows preschool-level information and allows organisations to identify and respo
 
 ```{r}
 #| echo: false
-
 #| fig-cap: "Image of preschools dashboard, showing test environment data."
 knitr::include_graphics("images/preschools.png")
 
 ```
 :::
 
-***
-
 ::: {.callout-note collapse="true"}
 
 # Appendix 2 - Emerging Insights
 
-## Education
-_As use of the education app expands, richer patterns are emerging in the data being captured — from child demographics and attendance to preschool business trends. The visuals below provide early insight into how the platform reflects real-world programme participation and operations._
+## Education - Emerging Insights
+_As use of the education app expands, richer patterns are emerging in the data being captured - from child demographics and attendance to preschool business trends. The visuals below provide early insight into how the platform reflects real-world programme participation and operations._
 
 ### 1. Child demographics
 
@@ -411,16 +406,22 @@ _As use of the education app expands, richer patterns are emerging in the data b
 districts <- st_read("~/Desktop/data/DistrictMunicipalities2018_Final.shp", quiet = TRUE) %>%
   st_transform(4326)
 
-# --- Load required CSVs + spatial data (previously loaded in chunk 1) ---
+# Standardise fields for join
+districts <- districts %>%
+  mutate(
+    DISTRICT_NAME_clean = trimws(toupper(DISTRICT_N)),
+    PROVINCE_clean = trimws(toupper(PROVINCE))
+  )
+
+# --- Load required CSVs + spatial data ---
 codes <- read_csv("~/Desktop/data/codes-ed.csv")
-load("~/Desktop/data/postalcodes_geo.rda")   # <-- this restores `postalcodes_geo`
+load("~/Desktop/data/postalcodes_geo.rda")
 
 # --- Prepare postal code coordinates ---
 codes_geo <- codes %>%
   mutate(PostalCode = as.character(PostalCode)) %>%
   left_join(
-    postalcodes_geo %>%
-      mutate(code = as.character(code)),
+    postalcodes_geo %>% mutate(code = as.character(code)),
     by = c("PostalCode" = "code")
   ) %>%
   drop_na(lat, lon)
@@ -428,25 +429,13 @@ codes_geo <- codes %>%
 # --- Convert to spatial points ---
 codes_sf <- st_as_sf(codes_geo, coords = c("lon", "lat"), crs = 4326)
 
-# --- Static ggplot (keeping for completeness) ---
-p <- ggplot() +
-  geom_sf(data = districts, fill = "grey95", colour = "grey70", linewidth = 0.3) +
-  geom_sf(
-    data = codes_sf,
-    aes(size = TotalChildren),
-    colour = "#1DBADF", alpha = 0.6
-  ) +
-  scale_size_continuous(range = c(1, 10)) +
-  coord_sf(datum = NA) +
-  theme_minimal() +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(title = "Total Children by Postal Code") +
-  guides(size = "none")
+# --- Spatially join points → districts (GET DISTRICT + PROVINCE HERE) ---
+codes_sf_with_districts <- st_join(
+  codes_sf,
+  districts %>% select(DISTRICT_N, PROVINCE),
+  join = st_within
+)
 
-# --- Interactive leaflet map ---
 leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
   addPolygons(
@@ -454,19 +443,17 @@ leaflet() %>%
     color = "#666", weight = 1, fillOpacity = 0.1
   ) %>%
   addCircleMarkers(
-    data = codes_sf,
+    data = codes_sf_with_districts,
     radius = ~scales::rescale(TotalChildren, to = c(2, 12)),
     color = "#1DBADF", fillOpacity = 0.8, stroke = FALSE,
     popup = ~paste0(
-      "Postal code: ", PostalCode, "<br>",
-      "Total children: ", TotalChildren
+      "<b>Total children:</b> ", TotalChildren, "<br>",
+      "<b>District:</b> ", DISTRICT_N, "<br>",
+      "<b>Province:</b> ", PROVINCE
     )
   ) %>%
-  setView(lng = 25, lat = -29, zoom = 5) %>%
-  setMaxBounds(
-    lng1 = 16, lat1 = -35,
-    lng2 = 33, lat2 = -22
-  )
+  setView(lng = 25, lat = -29, zoom = 5)
+
 
 ```
 
@@ -575,6 +562,11 @@ ggplot(grants, aes(x = fct_reorder(type, number_of_children),
   theme_minimal(base_size = 13)
 ```
 
+#### Additional Data Collected
+- Primary caregiver's relationship to child (mother, father, grandparent, etc.)
+- Home languages
+- Allergies, disabilities, health conditions (free text)
+- Primary caregiver's highest level of education
 <br>
 
 
@@ -595,7 +587,7 @@ attendance <- read_csv("~/Desktop/data/child-attendance.csv") %>%
 # --- Plot ---
 ggplot(attendance, aes(x = reorder(Month, month_start),
                        y = `Percentage child attendance`)) +
-  geom_col(fill = "#1DBADF") +                           # ECD Connect teal
+  geom_col(fill = "#FF2180") +                           # ECD Connect teal
   geom_text(aes(label = paste0(round(`Percentage child attendance`, 0), "%")),
             vjust = -0.5, size = 3.2, colour = "#004C6D") +  # navy text
   scale_y_continuous(labels = label_percent(scale = 1)) +
@@ -611,11 +603,14 @@ ggplot(attendance, aes(x = reorder(Month, month_start),
   )
 ```
 
+#### Additional Data Collected
+- Child's start and end date at preschool
+
 <br>
 
 ### 3. Business & Finance
 
-#### Spread of preschool balances (1 August to 31 October 2025)
+#### Spread of Preschool Balances (Apr to Nov 2025)
 _Balance is income minus expenses_
 
 ```{r balances-table, echo=FALSE}
@@ -682,7 +677,7 @@ balances_clean <- dplyr::filter(
 )
 
 ggplot(balances_clean, aes(x = balance)) +
-  geom_histogram(binwidth = 3000, fill = "steelblue", colour = "white") +
+  geom_histogram(binwidth = 3000, fill = "#27385A", colour = "white") +
   scale_x_continuous(labels = comma, breaks = pretty_breaks(n = 7)) +
   scale_y_continuous(labels = comma) +
   labs(
@@ -694,7 +689,7 @@ ggplot(balances_clean, aes(x = balance)) +
 
 <br>
 
-#### Income and Expense Categories
+#### Income and Expense Categories (Apr to Nov 2025)
 _Percentage breakdown of income and expense categories during the selected period. Each pie shows the share of total income or total expenses contributed by each category._
 
 ::: {style="width:100%"}
@@ -807,9 +802,7 @@ combined
 <br>
 
 #### DBE Subsidy
-
-#### Preschools Recording DBE Subsidies
-_Among those who logged income and expenses._
+_Subsidy information - April to November 2025._
 
 ::: {.stat-block}
 
@@ -819,17 +812,17 @@ _Among those who logged income and expenses._
 :::
 
 ::: {.stat-card}
-<p class="stat-number">R 89,040</p>
+<p class="stat-number">R 88,275</p>
 <p class="stat-label">average DBE subsidy amount received</p>
 :::
 
 ::: {.stat-card}
-<p class="stat-number">R 45,793</p>
+<p class="stat-number">R 63,536</p>
 <p class="stat-label">median DBE subsidy amount</p>
 :::
 
 ::: {.stat-card}
-<p class="stat-number">50</p>
+<p class="stat-number">52</p>
 <p class="stat-label">children covered on average</p>
 :::
 
@@ -848,7 +841,7 @@ _Among those who logged income and expenses._
 <br>
 
 #### Preschool Fees
-_Preschool fee information, based on the 49 preschools which have added income/expenses to the app._
+_Preschool fee information- April to November 2025._
 
 ::: {.stat-block}
 
@@ -870,6 +863,16 @@ _Preschool fee information, based on the 49 preschools which have added income/e
 :::
 
 <br>
+
+#### Additional data collected
+Alongside the summaries shown above, the following fields are also recorded when preschools log their income and expenses:
+- Month and year of each entry
+- Amount captured
+- Child identifier for preschool fee payments
+- Donation type (where applicable)
+- Notes added by the preschool
+- Uploaded images for expense items (receipts/invoices)
+- Whether a financial statement was downloaded
 
 ### 4. Teaching & Learning
 
@@ -1280,5 +1283,7 @@ tab_style(
 
 
 :::
+
+<br>
 
 <button onclick="window.print()">Download PDF</button>
