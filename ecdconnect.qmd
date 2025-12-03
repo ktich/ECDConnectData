@@ -1188,7 +1188,7 @@ _Referrals are automatically raised by the app during visits. After the visit, t
 
 ::: {.stat-card}
 <p class="stat-number">6,681</p>
-<p class="stat-label">referrals raised</p>
+<p class="stat-label">referrals completed</p>
 :::
 
 ::: {.stat-card}
