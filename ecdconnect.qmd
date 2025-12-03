@@ -605,6 +605,7 @@ ggplot(attendance, aes(x = reorder(Month, month_start),
 
 #### Additional Data Collected
 - Child's start and end date at preschool
+- When a child is deregistered, we capture the reason for removal
 
 <br>
 
@@ -866,6 +867,7 @@ _Preschool fee information- April to November 2025._
 
 #### Additional data collected
 Alongside the summaries shown above, the following fields are also recorded when preschools log their income and expenses:
+
 - Month and year of each entry
 - Amount captured
 - Child identifier for preschool fee payments
@@ -873,6 +875,7 @@ Alongside the summaries shown above, the following fields are also recorded when
 - Notes added by the preschool
 - Uploaded images for expense items (receipts/invoices)
 - Whether a financial statement was downloaded
+
 
 ### 4. Teaching & Learning
 
@@ -894,7 +897,7 @@ The classroom activities and resources sections of the app have generated a lot 
 :::
 
 #### Child Progress Tracking
-_lorem ipsum_
+_Adoption of the child progress tool has been slower, but an increasing number of preschools are using the tool._
 
 ::: {.stat-block}
 
@@ -933,7 +936,7 @@ response_colours <- c("Positive" = "#83BB26",
 ggplot(data_long, aes(y = SubcategoryName, x = Count, fill = Response)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = response_colours) +
-  labs(title = "Child Developmental Outcomes by Subcategory",
+  labs(
        x = "Number of Skills",
        y = "Developmental Subcategory",
        fill = "Response") +
@@ -946,7 +949,7 @@ ggplot(data_long, aes(y = SubcategoryName, x = Count, fill = Response)) +
 
 ---
 
-Additional thoughts in Education. As we get a larger user base, particularly for the ECD Connect App, we are also able to send out comms via WA and learn more about our users, etc. -- so e.g. the points competition form & results.
+Beyond in-app data, we also learn from our user support process. Practitioners contact our WhatsApp line, where simple queries are handled automatically and more complex issues receive human support. This channel has enabled us to quickly distribute surveys and organise phone interviews with users. Over time, it will give us richer insights into user behaviour and the broader ECD landscape.
 
 ---
 
@@ -956,7 +959,7 @@ Additional thoughts in Education. As we get a larger user base, particularly for
 ### 1. Client Demographics
 _Demographics of all clients added since launch_
 
-#### Number of Clients Added per Province
+#### Number of CHWs and Clients Added per Province
 ```{r province-clients, echo=FALSE}
 #| warning: false
 #| message: false
